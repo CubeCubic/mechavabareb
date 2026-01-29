@@ -51,6 +51,12 @@ class UniversityRecommendationSystem:
     def _categorize_program(self, row) -> str:
         """Определяет категорию программы по названию"""
         name = row['program_name'].lower()
+        uni_code = row['university_code']
+        
+        # Специальная обработка для теологических университетов
+        theological_universities = [4, 88, 173, 174, 175, 177, 184, 194]
+        if uni_code in theological_universities:
+            return 'საღვთისმეტყველო'
         
         categories = {
             'საღვთისმეტყველო': ['თეოლოგ', 'ღვთისმეტყველ', 'საღმრთო', 'საეკლესიო', 'სასულიერო', 'ქრისტიანული ხელოვნებ'],
