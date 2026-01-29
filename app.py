@@ -157,23 +157,23 @@ def get_recommendations():
     foreign_language = data.get('foreign_language')
     
     # Получаем баллы по экзаменам
-    exam_scores = data.get('exam_scores', {})
+    exam_scores_raw = data.get('exam_scores', {})
     
     # Проверяем обязательные экзамены
-    if 'ქართული ენა და ლიტერატურა' not in exam_scores:
+    if 'ქართული ენა და ლიტერატურა' not in exam_scores_raw:
         return jsonify({
             'success': False,
             'message': 'გთხოვთ შეიყვანოთ ქულა ქართულ ენაში'
         })
     
-    if not foreign_language or foreign_language not in exam_scores:
+    if not foreign_language or foreign_language not in exam_scores_raw:
         return jsonify({
             'success': False,
             'message': 'გთხოვთ აირჩიოთ უცხოური ენა და შეიყვანოთ ქულა'
         })
     
     # Проверяем что есть хотя бы один дополнительный предмет
-    other_exams = {k: v for k, v in exam_scores.items() 
+    other_exams = {k: v for k, v in exam_scores_raw.items() 
                    if k not in ['ქართული ენა და ლიტერატურა', foreign_language]}
     
     if len(other_exams) == 0:
@@ -182,6 +182,19 @@ def get_recommendations():
             'message': 'გთხოვთ აირჩიოთ მინიმუმ ერთი დამატებითი საგანი'
         })
     
+    # Подготавливаем баллы: заменяем конкретный иностранный язык на "უცხოური ენა"
+    exam_scores = exam_scores_raw.copy()
+    if foreign_language:
+        foreign_score = exam_scores.pop(foreign_language, 0)
+        # Добавляем под всеми возможными вариантами написания "უცხოური ენა"
+        exam_scores['უცხოური ენა'] = foreign_score
+        exam_scores['უცხოური ენა (ინგ.)'] = foreign_score
+        exam_scores['უცხოური ენა (გერ.; ინგ.; რუს.; ფრან.)'] = foreign_score
+        exam_scores['უცხოური ენა (ინგ.; რუს.; გერ.; ფრან.)'] = foreign_score
+        exam_scores['უცხოური ენა (გერ.)'] = foreign_score
+        exam_scores['უცხოური ენა (რუს.)'] = foreign_score
+        exam_scores['უცხოური ენა (ფრან.)'] = foreign_score
+    
     # Получаем рекомендации
     recommendations = system.recommend_programs(
         city=city if city != 'ყველა' else None,
@@ -189,7 +202,6 @@ def get_recommendations():
         category=category if category != 'ყველა' else None,
         teaching_language=teaching_language if teaching_language != 'ყველა' else None,
         exam_scores=exam_scores,
-        foreign_language=foreign_language,
         top_n=20
     )
     

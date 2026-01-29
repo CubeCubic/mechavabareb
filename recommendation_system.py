@@ -1,6 +1,7 @@
 """
 Система рекомендаций программ обучения для абитуриентов
 Грузинские университеты 2026
+ОБНОВЛЕНО: использует официальную методику расчета баллов (სკალირებული ქულა)
 """
 
 import pandas as pd
@@ -11,7 +12,7 @@ import re
 
 class UniversityRecommendationSystem:
     """
-    Система рекомендаций программ обучения
+    Система рекомендаций программ обучения с официальной методикой расчета
     """
     
     def __init__(self, database_path: str):
@@ -52,18 +53,18 @@ class UniversityRecommendationSystem:
         name = row['program_name'].lower()
         
         categories = {
-            'მედიცინა და ფარმაცია': ['მედიცინა', 'სტომატოლოგ', 'ფარმაცია'],
+            'მედიცინა და ფარმაცია': ['მედიცინა', 'სტომატოლოგ', 'ფარმაცია', 'ექთანი', 'სამეანო', 'რეაბილიტაცი'],
             'IT და კომპიუტერული მეცნიერებები': ['კომპიუტერ', 'ინფორმაცი'],
-            'ბიზნესი და ეკონომიკა': ['ბიზნეს', 'ეკონომიკ', 'მენეჯმენტ', 'ფინანს', 'ტურიზმ'],
-            'სამართალი': ['სამართალ'],
-            'ხელოვნება და დიზაინი': ['ხელოვნება', 'დიზაინ', 'არქიტექტურ', 'ხატვა'],
-            'მუსიკა და თეატრი': ['მუსიკ', 'თეატრ', 'კინო', 'მსახიობ'],
-            'ინჟინერია': ['ინჟინერ', 'მშენებლობ'],
-            'ენები და ფილოლოგია': ['ფილოლოგ'],
-            'საბუნებისმეტყველო მეცნიერებები': ['მათემატიკ', 'ფიზიკ', 'ქიმი', 'ბიოლოგ'],
-            'სოციალური მეცნიერებები': ['ფსიქოლოგ', 'პოლიტიკ', 'სოციოლოგ', 'ისტორი'],
-            'სასოფლო-სამეურნეო': ['აგრონომ', 'ვეტერინარ'],
-            'განათლება': ['მასწავლებელ', 'განათლება']
+            'ბიზნესი და ეკონომიკა': ['ბიზნეს', 'ეკონომიკ', 'მენეჯმენტ', 'ფინანს', 'ტურიზმ', 'მარკეტინგ'],
+            'სამართალი': ['სამართალ', 'იურისპრუდენცი'],
+            'ხელოვნება და დიზაინი': ['ხელოვნება', 'დიზაინ', 'არქიტექტურ', 'ხატვა', 'გრაფიკ'],
+            'მუსიკა და თეატრი': ['მუსიკ', 'თეატრ', 'კინო', 'მსახიობ', 'ბალეტ', 'ქორეოგრაფი'],
+            'ინჟინერია': ['ინჟინერ', 'მშენებლობ', 'ენერგეტიკ', 'ტრანსპორტ'],
+            'ენები და ფილოლოგია': ['ფილოლოგ', 'ქართული ენა', 'ინგლისური', 'გერმანული'],
+            'საბუნებისმეტყველო მეცნიერებები': ['მათემატიკ', 'ფიზიკ', 'ქიმი', 'ბიოლოგ', 'გეოგრაფ', 'ეკოლოგ'],
+            'სოციალური მეცნიერებები': ['ფსიქოლოგ', 'პოლიტიკ', 'სოციოლოგ', 'ისტორი', 'ფილოსოფი', 'ანთროპოლოგ'],
+            'სასოფლო-სამეურნეო': ['აგრონომ', 'ვეტერინარ', 'სატყეო', 'ლანდშაფტ'],
+            'განათლება': ['მასწავლებელ', 'განათლება', 'პედაგოგ']
         }
         
         for category, keywords in categories.items():
@@ -75,16 +76,36 @@ class UniversityRecommendationSystem:
     
     def _get_city(self, uni_code: int) -> str:
         """Определяет город университета по коду"""
-        # Маппинг университетов на города
         city_map = {
+            # Тбилиси
             1: 'თბილისი', 2: 'თბილისი', 3: 'თბილისი', 4: 'თბილისი',
             5: 'თბილისი', 6: 'თბილისი', 10: 'თბილისი', 12: 'თბილისი',
+            33: 'თბილისი', 36: 'თბილისი', 40: 'თბილისი', 52: 'თბილისი',
             64: 'თბილისი', 85: 'თბილისი', 88: 'თბილისი', 98: 'თბილისი',
             115: 'თბილისი', 120: 'თბილისი', 121: 'თბილისი', 122: 'თბილისი',
-            9: 'ქუთაისი',
+            129: 'თბილისი', 131: 'თბილისი', 143: 'თბილისი', 145: 'თბილისი',
+            152: 'თბილისი', 153: 'თბილისი', 154: 'თბილისი', 171: 'თბილისი',
+            172: 'თბილისი', 173: 'თბილისი', 175: 'თბილისი', 177: 'თბილისი',
+            181: 'თბილისი', 183: 'თბილისი', 186: 'თბილისი', 195: 'თბილისი',
+            198: 'თბილისი', 199: 'თბილისი', 201: 'თბილისი', 202: 'თბილისი',
+            203: 'თბილისი', 204: 'თბილისი', 206: 'თბილისი',
+            # Кутаиси
+            9: 'ქუთაისი', 19: 'ქუთაისი', 174: 'ქუთაისი', 197: 'ქუთაისი',
+            # Телави
             71: 'თელავი',
+            # Зугдиди
             97: 'ზუგდიდი',
-            114: 'ბათუმი', 129: 'ბათუმი'
+            # Батуми
+            53: 'ბათუმი', 114: 'ბათუმი', 130: 'ბათუმი', 140: 'ბათუმი',
+            184: 'ბათუმი', 192: 'ბათუმი', 205: 'ბათუმი',
+            # Гори
+            133: 'გორი', 155: 'გორი',
+            # Ахалцихе
+            14: 'ახალციხე', 194: 'ახალციხე',
+            # სოფ. ხიჭაური
+            142: 'სოფ. ხიჭაური',
+            # სოფ. გრემი
+            174: 'სოფ. გრემი'
         }
         return city_map.get(uni_code, 'თბილისი')
     
@@ -97,186 +118,240 @@ class UniversityRecommendationSystem:
         Фильтрация программ по критериям
         
         Args:
-            city: Город (თბილისი, ბათუმი и т.д.)
+            city: Город
             uni_type: Тип вуза (სახელმწიფო/კერძო)
             category: Категория программы
             teaching_language: Язык обучения
             
         Returns:
-            Отфильтрованный датафрейм программ
+            Отфильтрованный DataFrame
         """
         filtered = self.df.copy()
         
-        if city and city != 'ყველა':
+        if city:
             filtered = filtered[filtered['city'] == city]
         
-        if uni_type and uni_type != 'ყველა':
+        if uni_type:
             filtered = filtered[filtered['uni_type'] == uni_type]
         
-        if category and category != 'ყველა':
+        if category:
             filtered = filtered[filtered['category'] == category]
         
-        if teaching_language and teaching_language != 'ყველა':
-            # Проверяем язык обучения (может быть записан по-разному)
-            filtered = filtered[filtered['teaching_language'].str.contains(
-                teaching_language, case=False, na=False
-            )]
+        if teaching_language:
+            filtered = filtered[filtered['teaching_language'] == teaching_language]
         
         return filtered
     
-    def get_required_exams(self, filtered_programs: pd.DataFrame) -> Dict:
+    def get_required_exams(self, 
+                          city: str = None,
+                          uni_type: str = None,
+                          category: str = None,
+                          teaching_language: str = None) -> Dict:
         """
-        Получает список всех необходимых экзаменов для отфильтрованных программ
+        Получает список обязательных и выборочных экзаменов для отфильтрованных программ
         
         Returns:
-            Словарь с обязательными и выборочными предметами
+            Dictionary с mandatory и elective экзаменами
         """
+        filtered = self.filter_programs(city, uni_type, category, teaching_language)
+        
+        if len(filtered) == 0:
+            return {'mandatory': [], 'elective': []}
+        
         mandatory_exams = set()
         elective_exams = set()
         
         # Собираем обязательные экзамены
         for i in range(1, 5):
             col = f'mandatory_exam_{i}'
-            exams = filtered_programs[col].dropna().unique()
+            exams = filtered[col].dropna().unique()
             for exam in exams:
-                if pd.notna(exam) and str(exam).strip():
-                    # Очищаем название экзамена
-                    exam_clean = str(exam).strip()
-                    if exam_clean and exam_clean not in ['1', '2', '3', '4']:
-                        mandatory_exams.add(exam_clean)
+                if str(exam).strip() and not str(exam).isdigit():
+                    mandatory_exams.add(str(exam).strip())
         
         # Собираем выборочные экзамены
         for i in range(1, 7):
             col = f'elective_exam_{i}_name'
-            exams = filtered_programs[col].dropna().unique()
+            exams = filtered[col].dropna().unique()
             for exam in exams:
-                if pd.notna(exam) and str(exam).strip():
-                    exam_clean = str(exam).strip()
-                    # Исключаем числа (это места, а не названия)
-                    if exam_clean and not exam_clean.isdigit():
-                        elective_exams.add(exam_clean)
-        
-        # Грузинский язык и иностранный язык - всегда обязательны
-        mandatory_core = {
-            'ქართული ენა და ლიტერატურა',
-            'უცხოური ენა'
-        }
+                if str(exam).strip() and not str(exam).isdigit():
+                    elective_exams.add(str(exam).strip())
         
         return {
-            'mandatory_core': mandatory_core,
-            'mandatory_all': mandatory_exams,
-            'elective': elective_exams
+            'mandatory': sorted(list(mandatory_exams)),
+            'elective': sorted(list(elective_exams))
         }
     
-    def calculate_score(self, 
-                       program: pd.Series,
-                       exam_scores: Dict[str, float],
-                       foreign_language: str) -> Tuple[float, bool, str]:
+    def _convert_to_scaled_score(self, raw_percentage: float) -> float:
         """
-        Рассчитывает общий балл абитуриента для программы
+        Конвертирует сырой процент (0-100) в скалированный балл (100-200)
+        
+        Официальный процесс:
+        1. Выравнивание (გათანაბრება) - корректировка сложности варианта
+        2. Скалирование (სკალირება) - Z = (X - E) / SD, потом Scaled = 15*Z + 150
+        
+        Для нашей симуляции (без реальных данных распределения):
+        - 0% → 100 (scaled)
+        - 50% → 150 (scaled, среднее)
+        - 100% → 200 (scaled)
         
         Args:
-            program: Программа (строка датафрейма)
-            exam_scores: Словарь {предмет: балл_в_процентах}
-            foreign_language: Выбранный иностранный язык
+            raw_percentage: Балл от 0 до 100
             
         Returns:
-            (weighted_score, meets_requirements, message)
+            Скалированный балл от 100 до 200
         """
-        total_score = 0
-        total_coef = 0
-        meets_requirements = True
-        messages = []
-        
-        # Проверяем обязательные экзамены
-        for i in range(1, 5):
-            exam_name = program.get(f'mandatory_exam_{i}')
-            if pd.notna(exam_name) and str(exam_name).strip():
-                try:
-                    coef = float(program.get(f'mandatory_exam_{i}_coef', 0))
-                except (ValueError, TypeError):
-                    coef = 0
-                    
-                min_score_str = program.get(f'mandatory_exam_{i}_min', '')
-                
-                # Парсим минимальный балл
-                min_score = self._parse_min_score(min_score_str)
-                
-                # Находим балл абитуриента
-                user_score = None
-                
-                # Обработка иностранного языка
-                if 'უცხოური ენა' in str(exam_name):
-                    user_score = exam_scores.get(foreign_language, 0)
-                elif str(exam_name) in exam_scores:
-                    user_score = exam_scores[str(exam_name)]
-                
-                if user_score is not None and coef > 0:
-                    # Проверяем минимальный порог
-                    if user_score <= min_score:
-                        meets_requirements = False
-                        messages.append(f"არ აკმაყოფილებს მინიმუმს: {exam_name} ({user_score}% < {min_score}%)")
-                    
-                    # Добавляем взвешенный балл
-                    total_score += float(user_score) * float(coef)
-                    total_coef += float(coef)
-        
-        # Проверяем выборочные экзамены (нужен хотя бы один)
-        elective_found = False
-        best_elective_score = 0
-        
-        for i in range(1, 7):
-            exam_name = program.get(f'elective_exam_{i}_name')
-            if pd.notna(exam_name) and str(exam_name).strip() and not str(exam_name).isdigit():
-                try:
-                    coef = float(program.get(f'elective_exam_{i}_coef', 0))
-                except (ValueError, TypeError):
-                    coef = 0
-                
-                min_score_str = program.get(f'elective_exam_{i}_min', '')
-                min_score = self._parse_min_score(min_score_str)
-                
-                exam_name = str(exam_name).strip()
-                if exam_name in exam_scores:
-                    user_score = exam_scores[exam_name]
-                    
-                    if user_score > min_score:
-                        elective_found = True
-                        weighted = float(user_score) * float(coef)
-                        if weighted > best_elective_score:
-                            best_elective_score = weighted
-                            mandatory_coefs_sum = sum([
-                                float(program.get(f'mandatory_exam_{j}_coef', 0)) 
-                                for j in range(1, 5) 
-                                if pd.notna(program.get(f'mandatory_exam_{j}_coef'))
-                            ])
-                            total_coef = mandatory_coefs_sum + coef
-        
-        if not elective_found and program.get('elective_exams'):
-            meets_requirements = False
-            messages.append("არცერთი საარჩევი საგანი არ არის შეყვანილი")
-        
-        total_score += best_elective_score
-        
-        # Финальный взвешенный балл
-        if total_coef > 0:
-            weighted_score = total_score / total_coef
+        if raw_percentage <= 0:
+            return 100.0
+        elif raw_percentage >= 100:
+            return 200.0
         else:
-            weighted_score = 0
-        
-        return weighted_score, meets_requirements, "; ".join(messages)
+            # Линейный маппинг: scaled = 100 + raw_percentage
+            # Симулирует официальную шкалу где среднее=150, диапазон=100-200
+            return 100.0 + raw_percentage
     
-    def _parse_min_score(self, min_score_str) -> float:
-        """Парсит минимальный балл из строки"""
-        if pd.isna(min_score_str):
-            return 0
+    def _parse_percentage(self, value) -> float:
+        """Извлекает процент из строки"""
+        if pd.isna(value):
+            return 0.0
         
-        min_str = str(min_score_str)
-        # Извлекаем число из строки типа "40%-ზე მეტი"
-        numbers = re.findall(r'\d+', min_str)
+        value_str = str(value)
+        numbers = re.findall(r'\d+', value_str)
         if numbers:
             return float(numbers[0])
-        return 0
+        return 0.0
+    
+    def calculate_score(self, program, exam_scores: Dict[str, float]) -> Dict:
+        """
+        Рассчитывает конкурсный балл по ОФИЦИАЛЬНОЙ грузинской методике
+        
+        Формула из официального справочника (стр. 32):
+        საკონკურსო ქულა = Σ(სკალირებული ქულა × კოეფიციენტი)
+        Competitive Score = Σ(Scaled Score × Coefficient)
+        
+        Процесс:
+        1. Конвертируем сырые баллы (0-100%) в скалированные (100-200)
+        2. Умножаем каждый скалированный балл на его коэффициент
+        3. Суммируем все взвешенные баллы = конкурсный балл
+        4. Проверяем минимальные пороги
+        
+        Args:
+            program: DataFrame row с информацией о программе
+            exam_scores: dict вида {exam_name: score_percentage}
+            
+        Returns:
+            dict с compatibility, competitive_score и admission_chance
+        """
+        competitive_score = 0.0
+        total_coefficients = 0.0
+        failed_minimums = []
+        scored_exams = []
+        
+        # Обрабатываем обязательные экзамены
+        for i in range(1, 5):
+            exam_col = f'mandatory_exam_{i}'
+            coef_col = f'mandatory_exam_{i}_coef'
+            min_col = f'mandatory_exam_{i}_min'
+            
+            if pd.notna(program[exam_col]):
+                exam_name = str(program[exam_col]).strip()
+                coefficient = float(program[coef_col]) if pd.notna(program[coef_col]) else 1.0
+                minimum = self._parse_percentage(program[min_col]) if pd.notna(program[min_col]) else 0.0
+                
+                # Получаем сырой балл (0-100%)
+                raw_score = exam_scores.get(exam_name, 0.0)
+                
+                # Проверяем минимальный порог (на сыром балле)
+                if raw_score < minimum:
+                    failed_minimums.append(f"{exam_name} ({raw_score}% < {minimum}%)")
+                
+                # Конвертируем в скалированный балл (100-200)
+                scaled_score = self._convert_to_scaled_score(raw_score)
+                
+                # Добавляем к конкурсному баллу: scaled × coefficient
+                contribution = scaled_score * coefficient
+                competitive_score += contribution
+                total_coefficients += coefficient
+                
+                scored_exams.append({
+                    'name': exam_name,
+                    'raw': raw_score,
+                    'scaled': round(scaled_score, 2),
+                    'coefficient': coefficient,
+                    'contribution': round(contribution, 2)
+                })
+        
+        # Обрабатываем выборочные экзамены - выбираем лучший
+        elective_candidates = []
+        for i in range(1, 7):
+            exam_col = f'elective_exam_{i}_name'
+            coef_col = f'elective_exam_{i}_coef'
+            min_col = f'elective_exam_{i}_min'
+            
+            if pd.notna(program[exam_col]):
+                exam_name = str(program[exam_col]).strip()
+                coefficient = float(program[coef_col]) if pd.notna(program[coef_col]) else 1.0
+                minimum = self._parse_percentage(program[min_col]) if pd.notna(program[min_col]) else 0.0
+                
+                raw_score = exam_scores.get(exam_name, 0.0)
+                
+                # Учитываем только если проходит минимум
+                if raw_score >= minimum:
+                    scaled_score = self._convert_to_scaled_score(raw_score)
+                    contribution = scaled_score * coefficient
+                    
+                    elective_candidates.append({
+                        'name': exam_name,
+                        'raw': raw_score,
+                        'scaled': round(scaled_score, 2),
+                        'coefficient': coefficient,
+                        'contribution': round(contribution, 2)
+                    })
+        
+        # Выбираем лучший выборочный (наибольший вклад в конкурсный балл)
+        if elective_candidates:
+            best_elective = max(elective_candidates, key=lambda x: x['contribution'])
+            competitive_score += best_elective['contribution']
+            total_coefficients += best_elective['coefficient']
+            scored_exams.append(best_elective)
+        
+        # Рассчитываем процент совместимости
+        # Максимально возможный балл = 200 (scaled) × total_coefficients
+        # Фактический балл = competitive_score
+        if total_coefficients > 0:
+            max_possible = 200.0 * total_coefficients
+            compatibility = (competitive_score / max_possible) * 100.0
+        else:
+            compatibility = 0.0
+        
+        # Определяем шанс поступления на основе совместимости
+        if failed_minimums:
+            admission_chance = "არ აკმაყოფილებს მინიმუმს"
+            chance_level = "failed"
+        elif compatibility >= 90:
+            admission_chance = "ძალიან მაღალი"
+            chance_level = "very_high"
+        elif compatibility >= 75:
+            admission_chance = "მაღალი"
+            chance_level = "high"
+        elif compatibility >= 60:
+            admission_chance = "საშუალო"
+            chance_level = "medium"
+        elif compatibility >= 45:
+            admission_chance = "დაბალი"
+            chance_level = "low"
+        else:
+            admission_chance = "ძალიან დაბალი"
+            chance_level = "very_low"
+        
+        return {
+            'compatibility': round(compatibility, 1),
+            'competitive_score': round(competitive_score, 2),
+            'admission_chance': admission_chance,
+            'chance_level': chance_level,
+            'failed_minimums': failed_minimums,
+            'scored_exams': scored_exams
+        }
     
     def recommend_programs(self,
                           city: str,
@@ -284,8 +359,7 @@ class UniversityRecommendationSystem:
                           category: str,
                           teaching_language: str,
                           exam_scores: Dict[str, float],
-                          foreign_language: str,
-                          top_n: int = 10) -> List[Dict]:
+                          top_n: int = 20) -> List[Dict]:
         """
         Главная функция рекомендации программ
         
@@ -294,8 +368,7 @@ class UniversityRecommendationSystem:
             uni_type: Тип вуза
             category: Категория программы
             teaching_language: Язык обучения
-            exam_scores: Баллы по экзаменам
-            foreign_language: Выбранный иностранный язык
+            exam_scores: Баллы по экзаменам {exam_name: score_0_to_100}
             top_n: Количество рекомендаций
             
         Returns:
@@ -311,131 +384,37 @@ class UniversityRecommendationSystem:
         results = []
         
         for idx, program in filtered.iterrows():
-            score, meets_req, message = self.calculate_score(
-                program, exam_scores, foreign_language
-            )
+            score_data = self.calculate_score(program, exam_scores)
             
-            # Рассчитываем процент совместимости (0-100%)
-            compatibility = min(100, (score / 100) * 100)
-            
-            # Определяем шанс поступления
-            if not meets_req:
-                admission_chance = "არ აკმაყოფილებს მოთხოვნებს"
-                compatibility = 0
-            elif compatibility >= 90:
-                admission_chance = "ძალიან მაღალი"
-            elif compatibility >= 75:
-                admission_chance = "მაღალი"
-            elif compatibility >= 60:
-                admission_chance = "საშუალო"
-            elif compatibility >= 45:
-                admission_chance = "დაბალი"
+            # Получаем стоимость (бесплатно для государственных в 2026)
+            if program['uni_type'] == 'სახელმწიფო':
+                cost_display = "უფასო"
             else:
-                admission_chance = "ძალიან დაბალი"
+                cost_display = f"{int(program['annual_tuition'])} ლარი"
             
             result = {
-                'program_code': program['program_code'],
+                'program_code': int(program['program_code']),
                 'program_name': program['program_name'],
-                'university_code': program['university_code'],
+                'university_code': int(program['university_code']),
                 'city': program['city'],
                 'uni_type': program['uni_type'],
-                'tuition': program['annual_tuition'],
-                'places': program['total_places'],
+                'tuition': float(program['annual_tuition']),
+                'cost_display': cost_display,
+                'places': int(program['total_places']) if pd.notna(program['total_places']) else 0,
                 'teaching_language': program['teaching_language'],
-                'credits': program['credits'],
-                'compatibility': round(compatibility, 1),
-                'admission_chance': admission_chance,
-                'weighted_score': round(score, 2),
-                'meets_requirements': meets_req,
-                'message': message,
+                'credits': int(program['credits']) if pd.notna(program['credits']) else 240,
+                'compatibility': score_data['compatibility'],
+                'competitive_score': score_data['competitive_score'],
+                'admission_chance': score_data['admission_chance'],
+                'chance_level': score_data['chance_level'],
+                'failed_minimums': score_data['failed_minimums'],
+                'accreditation': program.get('accreditation_status', ''),
                 'special_note': program.get('special_note', '')
             }
             
             results.append(result)
         
-        # Сортируем по совместимости
-        results.sort(key=lambda x: x['compatibility'], reverse=True)
+        # Сортируем по конкурсному баллу (DESC)
+        results.sort(key=lambda x: x['competitive_score'], reverse=True)
         
         return results[:top_n]
-    
-    def get_available_filters(self) -> Dict:
-        """
-        Возвращает доступные значения для фильтров
-        """
-        return {
-            'cities': ['ყველა'] + sorted(self.df['city'].unique().tolist()),
-            'uni_types': ['ყველა', 'სახელმწიფო', 'კერძო'],
-            'categories': ['ყველა'] + sorted(self.df['category'].unique().tolist()),
-            'languages': ['ყველა', 'ქართული ენა', 'ინგლისური ენა', 'რუსული ენა']
-        }
-
-
-def main():
-    """
-    Тестовый запуск системы
-    """
-    print("=" * 80)
-    print("სისტემა იტვირთება...")
-    print("=" * 80)
-    
-    # Инициализация системы
-    system = UniversityRecommendationSystem('/mnt/project/programs_database.csv')
-    
-    # Пример использования
-    print("\n" + "=" * 80)
-    print("მაგალითი: IT პროგრამების ძიება თბილისში")
-    print("=" * 80)
-    
-    # Фильтруем программы
-    filtered = system.filter_programs(
-        city='თბილისი',
-        category='IT და კომპიუტერული მეცნიერებები'
-    )
-    
-    print(f"\nნაპოვნია {len(filtered)} პროგრამა")
-    
-    # Получаем необходимые экзамены
-    exams = system.get_required_exams(filtered)
-    print("\nსავალდებულო საგნები:")
-    for exam in exams['mandatory_core']:
-        print(f"  - {exam}")
-    
-    print("\nსაარჩევი საგნები:")
-    for exam in list(exams['elective'])[:5]:
-        print(f"  - {exam}")
-    
-    # Пример баллов абитуриента
-    example_scores = {
-        'ქართული ენა და ლიტერატურა': 75,
-        'ინგლისური ენა': 80,
-        'მათემატიკა': 85,
-        'ფიზიკა': 70
-    }
-    
-    print("\n" + "=" * 80)
-    print("რეკომენდაციები (მაგალითი):")
-    print("=" * 80)
-    
-    recommendations = system.recommend_programs(
-        city='თბილისი',
-        uni_type='ყველა',
-        category='IT და კომპიუტერული მეცნიერებები',
-        teaching_language='ქართული',
-        exam_scores=example_scores,
-        foreign_language='ინგლისური ენა',
-        top_n=5
-    )
-    
-    for i, rec in enumerate(recommendations, 1):
-        print(f"\n{i}. {rec['program_name']}")
-        print(f"   თავსებადობა: {rec['compatibility']}%")
-        print(f"   ჩაბარების შანსი: {rec['admission_chance']}")
-        print(f"   ადგილების რაოდენობა: {rec['places']}")
-        if rec['uni_type'] == 'კერძო':
-            print(f"   საფასური: {rec['tuition']} GEL")
-        else:
-            print(f"   უფასო (სახელმწიფო)")
-
-
-if __name__ == "__main__":
-    main()
