@@ -1,0 +1,5 @@
+Flask==3.0.0
+pandas==2.1.4
+numpy==1.26.2
+Werkzeug==3.0.1
+gunicorn==21.2.0
