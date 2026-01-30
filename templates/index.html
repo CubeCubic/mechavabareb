@@ -133,16 +133,6 @@
             color: #667eea;
         }
         
-        .score-slider {
-            margin-top: 10px;
-        }
-        
-        .score-value {
-            font-weight: 700;
-            color: #667eea;
-            font-size: 1.2rem;
-        }
-        
         .recommendation-card {
             background: white;
             border-radius: 15px;
@@ -249,154 +239,139 @@
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-graduation-cap"></i> უნივერსიტეტის შერჩევის სისტემა</h1>
-            <p>მოძებნეთ თქვენთვის შესაფერისი საგანმანათლებლო პროგრამა</p>
+            <p>აირჩიეთ საუკეთესო პროგრამა თქვენი ქულების მიხედვით</p>
         </div>
         
         <!-- Step Indicator -->
         <div class="step-indicator">
             <div class="step active" id="step1">
                 <div class="step-number">1</div>
-                <div>ფილტრები</div>
+                <small>ფილტრები</small>
             </div>
             <div class="step" id="step2">
                 <div class="step-number">2</div>
-                <div>ქულები</div>
+                <small>გამოცდები</small>
             </div>
             <div class="step" id="step3">
                 <div class="step-number">3</div>
-                <div>შედეგები</div>
+                <small>შედეგები</small>
             </div>
         </div>
         
-        <!-- Step 1: Filters -->
+        <!-- Filters Section -->
         <div class="card" id="filtersSection">
             <div class="card-header">
-                <i class="fas fa-filter"></i> ფილტრები
+                <i class="fas fa-filter"></i> შერჩევის კრიტერიუმები
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">ქალაქი</label>
-                        <select class="form-select" id="citySelect">
-                            {% for value, label in cities.items() %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-city"></i> ქალაქი</label>
+                        <select id="citySelect" class="form-select">
+                            <option value="ყველა">ყველა ქალაქი</option>
+                            <option value="თბილისი">თბილისი</option>
+                            <option value="ბათუმი">ბათუმი</option>
+                            <option value="ქუთაისი">ქუთაისი</option>
+                            <!-- Добавьте остальные города -->
                         </select>
                     </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">უნივერსიტეტის ტიპი</label>
-                        <select class="form-select" id="uniTypeSelect">
-                            {% for value, label in uni_types.items() %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-university"></i> უნივერსიტეტის ტიპი</label>
+                        <select id="uniTypeSelect" class="form-select">
+                            <option value="ყველა">ყველა ტიპი</option>
+                            <option value="სახელმწიფო">სახელმწიფო (უფასო)</option>
+                            <option value="კერძო">კერძო (ფასიანი)</option>
                         </select>
                     </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">პროფესია/მიმართულება</label>
-                        <select class="form-select" id="categorySelect">
-                            {% for value, label in categories.items() %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-book"></i> მიმართულება</label>
+                        <select id="categorySelect" class="form-select">
+                            <option value="ყველა">ყველა მიმართულება</option>
+                            <option value="მედიცინა და ფარმაცია">მედიცინა და ფარმაცია</option>
+                            <!-- Добавьте остальные категории -->
                         </select>
                     </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">სწავლების ენა</label>
-                        <select class="form-select" id="languageSelect">
-                            {% for value, label in languages.items() %}
-                            <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-language"></i> სწავლების ენა</label>
+                        <select id="languageSelect" class="form-select">
+                            <option value="ყველა">ყველა ენა</option>
+                            <option value="ქართული">ქართული</option>
+                            <option value="ინგლისური">ინგლისური</option>
+                            <option value="რუსული">რუსული</option>
                         </select>
                     </div>
                 </div>
-                
-                <div class="text-end">
-                    <button class="btn btn-primary btn-lg" onclick="loadExams()">
-                        <i class="fas fa-arrow-right"></i> გაგრძელება
+                <div class="text-center mt-4">
+                    <button onclick="loadExams()" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> შემდეგი
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Step 2: Exams -->
-        <div class="card" id="examsSection">
+        <!-- Exams Section -->
+        <div class="card" id="examsSection" style="display: none;">
             <div class="card-header">
                 <i class="fas fa-pencil-alt"></i> გამოცდების ქულები
             </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> 
-                    <strong>შენიშვნა:</strong> სავალდებულოა ქართული ენისა და უცხოური ენის ჩაბარება, დამატებით მინიმუმ 1 საგანი.
+            <div class="card-body p-4">
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle"></i> შეიყვანეთ თქვენი სავარაუდო ქულები (0-100). მინიმუმ 3 საგანი: ქართული + უცხოური + 1 დამატებითი.
                 </div>
                 
-                <!-- Foreign Language Selection -->
-                <div class="mb-4">
-                    <label class="form-label"><i class="fas fa-language"></i> აირჩიეთ უცხოური ენა (სავალდებულო)</label>
-                    <select class="form-select" id="foreignLanguageSelect">
-                        <option value="">-- აირჩიეთ --</option>
-                        {% for value, label in foreign_languages.items() %}
-                        <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <label class="form-label"><i class="fas fa-globe"></i> უცხოური ენა (აირჩიეთ ერთი)</label>
+                <select id="foreignLanguageSelect" class="form-select mb-3">
+                    <option value="">აირჩიეთ ენა</option>
+                    <option value="ინგლისური ენა">ინგლისური</option>
+                    <option value="გერმანული ენა">გერმანული</option>
+                    <option value="ფრანგული ენა">ფრანგული</option>
+                    <option value="რუსული ენა">რუსული</option>
+                </select>
                 
-                <div id="examsList"></div>
+                <div id="mandatoryExamsContainer"></div>
+                <div id="electiveExamsContainer"></div>
                 
-                <div class="text-end mt-4">
-                    <button class="btn btn-secondary" onclick="backToFilters()">
+                <div class="d-flex justify-content-between mt-4">
+                    <button onclick="backToFilters()" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> უკან
                     </button>
-                    <button class="btn btn-primary btn-lg" onclick="getRecommendations()">
-                        <i class="fas fa-search"></i> შედეგების ჩვენება
+                    <button onclick="getRecommendations()" class="btn btn-primary">
+                        <i class="fas fa-search"></i> ძებნა
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Step 3: Results -->
-        <div class="card" id="resultsSection">
-            <div class="card-header">
-                <i class="fas fa-star"></i> რეკომენდებული პროგრამები
-            </div>
-            <div class="card-body">
-                <div id="resultsContainer"></div>
-                
-                <div class="text-center mt-4">
-                    <button class="btn btn-primary" onclick="startOver()">
-                        <i class="fas fa-redo"></i> თავიდან დაწყება
-                    </button>
+        <!-- Results Section -->
+        <div id="resultsSection" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-trophy"></i> რეკომენდაციები
                 </div>
+                <div class="card-body p-4" id="resultsContainer">
+                    <!-- შედეგები აქ -->
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button onclick="startOver()" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> თავიდან დაწყება
+                </button>
             </div>
         </div>
     </div>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        let currentExams = {};
-        let examScores = {};
-        
         async function loadExams() {
             const city = document.getElementById('citySelect').value;
-            const uniType = document.getElementById('uniTypeSelect').value;
+            const uni_type = document.getElementById('uniTypeSelect').value;
             const category = document.getElementById('categorySelect').value;
-            const teachingLanguage = document.getElementById('languageSelect').value;
+            const teaching_language = document.getElementById('languageSelect').value;
             
             try {
                 const response = await fetch('/get_required_exams', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        city: city,
-                        uni_type: uniType,
-                        category: category,
-                        teaching_language: teachingLanguage
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({city, uni_type, category, teaching_language})
                 });
                 
                 const data = await response.json();
@@ -406,174 +381,81 @@
                     return;
                 }
                 
-                currentExams = data;
-                renderExams();
-                
-                // Show exams section, hide filters
+                // Показываем exams section
                 document.getElementById('filtersSection').style.display = 'none';
                 document.getElementById('examsSection').style.display = 'block';
                 
-                // Update steps
+                // Обновляем шаги
                 document.getElementById('step1').classList.add('completed');
                 document.getElementById('step1').classList.remove('active');
                 document.getElementById('step2').classList.add('active');
                 
+                // Рендерим обязательные экзамены
+                let mandatoryHtml = '<h5 class="mb-3">ობლიგატორული საგნები</h5>';
+                data.mandatory_exams.forEach(exam => {
+                    mandatoryHtml += `
+                        <div class="exam-score-input">
+                            <label><input type="checkbox" class="exam-checkbox" checked disabled> ${exam}</label>
+                            <input type="number" class="form-control score-input" min="0" max="100" value="0" data-exam="${exam}">
+                            <small>მინიმუმი: 0, მაქსიმუმი: 100</small>
+                        </div>
+                    `;
+                });
+                document.getElementById('mandatoryExamsContainer').innerHTML = mandatoryHtml;
+                
+                // Рендерим выборочные
+                let electiveHtml = '<h5 class="mb-3">არჩევითი საგნები (აირჩიეთ მინიმუმ 1)</h5>';
+                data.elective_exams.forEach(exam => {
+                    electiveHtml += `
+                        <div class="exam-score-input">
+                            <label><input type="checkbox" class="exam-checkbox" data-exam="${exam}"> ${exam}</label>
+                            <input type="number" class="form-control score-input" min="0" max="100" value="0" data-exam="${exam}" disabled>
+                            <small>მინიმუმი: 0, მაქსიმუმი: 100</small>
+                        </div>
+                    `;
+                });
+                document.getElementById('electiveExamsContainer').innerHTML = electiveHtml;
+                
+                // Добавляем обработчики для чекбоксов
+                document.querySelectorAll('.exam-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const input = e.target.parentElement.nextElementSibling;
+                        input.disabled = !e.target.checked;
+                    });
+                });
+                
             } catch (error) {
                 alert('შეცდომა მოხდა. გთხოვთ სცადოთ ხელახლა.');
-                console.error(error);
             }
-        }
-        
-        function renderExams() {
-            const container = document.getElementById('examsList');
-            let html = '<h5 class="mb-3">სავალდებულო საგნები:</h5>';
-            
-            // Always show Georgian
-            html += createExamInput('ქართული ენა და ლიტერატურა', true, true);
-            
-            // Show selected foreign language (will be enabled after selection)
-            html += '<div id="foreignLanguageExam"></div>';
-            
-            html += '<h5 class="mb-3 mt-4">დამატებითი საგნები (აირჩიეთ მინიმუმ 1):</h5>';
-            
-            currentExams.elective_exams.forEach(exam => {
-                html += createExamInput(exam, false, false);
-            });
-            
-            container.innerHTML = html;
-            
-            // Add event listener for foreign language selection
-            document.getElementById('foreignLanguageSelect').addEventListener('change', function() {
-                const selected = this.value;
-                if (selected) {
-                    document.getElementById('foreignLanguageExam').innerHTML = 
-                        createExamInput(selected, true, true);
-                }
-            });
-        }
-        
-        function createExamInput(examName, isRequired, isChecked) {
-            const safeId = examName.replace(/[^\w]/g, '_');
-            
-            // Определяем максимальный балл для экзамена (все экзамены - 60 баллов)
-            const maxScore = 60;
-            const minScore = 0;
-            
-            return `
-                <div class="exam-score-input">
-                    <label>
-                        <input type="checkbox" class="exam-checkbox" 
-                               id="check_${safeId}" 
-                               ${isRequired ? 'checked disabled' : ''} 
-                               ${isChecked ? 'checked' : ''}
-                               onchange="toggleExam('${examName}', this.checked)">
-                        <strong>${examName}</strong>
-                        ${isRequired ? '<span class="badge bg-danger ms-2">სავალდებულო</span>' : ''}
-                    </label>
-                    <div class="row align-items-center mt-2">
-                        <div class="col-md-8">
-                            <input type="number" class="form-control score-input" 
-                                   id="input_${safeId}" 
-                                   min="${minScore}" 
-                                   max="${maxScore}" 
-                                   value="30" 
-                                   ${!isRequired && !isChecked ? 'disabled' : ''}
-                                   oninput="updateScoreFromInput('${examName}', this.value, ${maxScore})"
-                                   style="text-align: center; font-size: 1.1rem; font-weight: 600;">
-                            <div class="d-flex justify-content-between small text-muted mt-1">
-                                <span>მინ: ${minScore}</span>
-                                <span>მაქს: ${maxScore}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="score-percentage" id="percent_${safeId}" style="font-size: 1.2rem; font-weight: 700; color: #667eea;">
-                                50%
-                            </div>
-                            <small class="text-muted">პროცენტი</small>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleExam(examName, isChecked) {
-            const safeId = examName.replace(/[^\w]/g, '_');
-            const input = document.getElementById('input_' + safeId);
-            
-            if (isChecked) {
-                input.disabled = false;
-                const score = parseInt(input.value) || 30;
-                const percentage = (score / 60) * 100;
-                examScores[examName] = percentage;
-            } else {
-                input.disabled = true;
-                delete examScores[examName];
-            }
-        }
-        
-        function updateScoreFromInput(examName, score, maxScore) {
-            const safeId = examName.replace(/[^\w]/g, '_');
-            const scoreValue = parseInt(score) || 0;
-            
-            // Ограничиваем значение
-            const limitedScore = Math.max(0, Math.min(maxScore, scoreValue));
-            
-            // Обновляем поле ввода если значение было ограничено
-            const input = document.getElementById('input_' + safeId);
-            if (input && input.value != limitedScore) {
-                input.value = limitedScore;
-            }
-            
-            // Вычисляем процент
-            const percentage = (limitedScore / maxScore) * 100;
-            
-            // Обновляем отображение процента
-            const percentElement = document.getElementById('percent_' + safeId);
-            if (percentElement) {
-                percentElement.textContent = percentage.toFixed(1) + '%';
-            }
-            
-            // Сохраняем в examScores как процент для совместимости с бэкендом
-            examScores[examName] = percentage;
-        }
-        
-        // Старая функция для совместимости
-        function updateScore(examName, value) {
-            updateScoreFromInput(examName, value, 60);
         }
         
         async function getRecommendations() {
             const foreignLang = document.getElementById('foreignLanguageSelect').value;
-            
             if (!foreignLang) {
                 alert('გთხოვთ აირჩიოთ უცხოური ენა');
                 return;
             }
             
-            // Ensure Georgian is included
-            const georgianId = 'ქართული_ენა_და_ლიტერატურა';
-            const georgianInput = document.getElementById('input_' + georgianId);
-            if (georgianInput) {
-                const score = parseInt(georgianInput.value) || 30;
-                const percentage = (score / 60) * 100;
-                examScores['ქართული ენა და ლიტერატურა'] = percentage;
+            const examScores = {};
+            document.querySelectorAll('.score-input').forEach(input => {
+                const exam = input.dataset.exam;
+                const checkbox = input.previousElementSibling.querySelector('.exam-checkbox');
+                if (checkbox.checked) {
+                    let value = parseInt(input.value);
+                    if (value < 0) value = 0;
+                    if (value > 100) value = 100;
+                    examScores[exam] = value;
+                }
+            });
+            
+            // Проверка мин. экзаменов (в JS для UX)
+            if (!examScores['ქართული ენა და ლიტერატურა'] || !examScores[foreignLang]) {
+                alert('გთხოვთ შეიყვანოთ ქულები ობლიგატორული საგნებისთვის');
+                return;
             }
             
-            // Ensure foreign language is included
-            const foreignId = foreignLang.replace(/[^\w]/g, '_');
-            const foreignInput = document.getElementById('input_' + foreignId);
-            if (foreignInput) {
-                const score = parseInt(foreignInput.value) || 30;
-                const percentage = (score / 60) * 100;
-                examScores[foreignLang] = percentage;
-            }
-            
-            // Check minimum requirements
-            const otherExams = Object.keys(examScores).filter(
-                k => k !== 'ქართული ენა და ლიტერატურა' && k !== foreignLang
-            );
-            
-            if (otherExams.length === 0) {
+            const otherCount = Object.keys(examScores).length - 2;  // Минус грузинский и иностранный
+            if (otherCount < 1) {
                 alert('გთხოვთ აირჩიოთ მინიმუმ ერთი დამატებითი საგანი');
                 return;
             }
@@ -582,7 +464,7 @@
                 document.getElementById('resultsContainer').innerHTML = `
                     <div class="spinner-container">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                            <span class="visually-hidden">იტვირთება...</span>
                         </div>
                         <p class="mt-3">იტვირთება შედეგები...</p>
                     </div>
