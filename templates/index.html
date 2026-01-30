@@ -114,6 +114,25 @@
             height: 20px;
         }
         
+        .score-input {
+            border: 2px solid #667eea !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+            height: 50px !important;
+        }
+        
+        .score-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25) !important;
+            border-color: #764ba2 !important;
+        }
+        
+        .score-percentage {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
         .score-slider {
             margin-top: 10px;
         }
@@ -435,6 +454,11 @@
         
         function createExamInput(examName, isRequired, isChecked) {
             const safeId = examName.replace(/[^\w]/g, '_');
+            
+            // Определяем максимальный балл для экзамена (все экзамены - 60 баллов)
+            const maxScore = 60;
+            const minScore = 0;
+            
             return `
                 <div class="exam-score-input">
                     <label>
@@ -446,21 +470,26 @@
                         <strong>${examName}</strong>
                         ${isRequired ? '<span class="badge bg-danger ms-2">სავალდებულო</span>' : ''}
                     </label>
-                    <div class="row align-items-center">
+                    <div class="row align-items-center mt-2">
                         <div class="col-md-8">
-                            <input type="range" class="form-range score-slider" 
-                                   id="slider_${safeId}" 
-                                   min="0" max="100" value="50" 
+                            <input type="number" class="form-control score-input" 
+                                   id="input_${safeId}" 
+                                   min="${minScore}" 
+                                   max="${maxScore}" 
+                                   value="30" 
                                    ${!isRequired && !isChecked ? 'disabled' : ''}
-                                   oninput="updateScore('${examName}', this.value)">
-                            <div class="d-flex justify-content-between small text-muted">
-                                <span>0%</span>
-                                <span>50%</span>
-                                <span>100%</span>
+                                   oninput="updateScoreFromInput('${examName}', this.value, ${maxScore})"
+                                   style="text-align: center; font-size: 1.1rem; font-weight: 600;">
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span>მინ: ${minScore}</span>
+                                <span>მაქს: ${maxScore}</span>
                             </div>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <span class="score-value" id="value_${safeId}">50%</span>
+                        <div class="col-md-4 text-center">
+                            <div class="score-percentage" id="percent_${safeId}" style="font-size: 1.2rem; font-weight: 700; color: #667eea;">
+                                50%
+                            </div>
+                            <small class="text-muted">პროცენტი</small>
                         </div>
                     </div>
                 </div>
@@ -469,21 +498,48 @@
         
         function toggleExam(examName, isChecked) {
             const safeId = examName.replace(/[^\w]/g, '_');
-            const slider = document.getElementById('slider_' + safeId);
+            const input = document.getElementById('input_' + safeId);
             
             if (isChecked) {
-                slider.disabled = false;
-                examScores[examName] = parseInt(slider.value);
+                input.disabled = false;
+                const score = parseInt(input.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores[examName] = percentage;
             } else {
-                slider.disabled = true;
+                input.disabled = true;
                 delete examScores[examName];
             }
         }
         
-        function updateScore(examName, value) {
+        function updateScoreFromInput(examName, score, maxScore) {
             const safeId = examName.replace(/[^\w]/g, '_');
-            document.getElementById('value_' + safeId).textContent = value + '%';
-            examScores[examName] = parseInt(value);
+            const scoreValue = parseInt(score) || 0;
+            
+            // Ограничиваем значение
+            const limitedScore = Math.max(0, Math.min(maxScore, scoreValue));
+            
+            // Обновляем поле ввода если значение было ограничено
+            const input = document.getElementById('input_' + safeId);
+            if (input && input.value != limitedScore) {
+                input.value = limitedScore;
+            }
+            
+            // Вычисляем процент
+            const percentage = (limitedScore / maxScore) * 100;
+            
+            // Обновляем отображение процента
+            const percentElement = document.getElementById('percent_' + safeId);
+            if (percentElement) {
+                percentElement.textContent = percentage.toFixed(1) + '%';
+            }
+            
+            // Сохраняем в examScores как процент для совместимости с бэкендом
+            examScores[examName] = percentage;
+        }
+        
+        // Старая функция для совместимости
+        function updateScore(examName, value) {
+            updateScoreFromInput(examName, value, 60);
         }
         
         async function getRecommendations() {
@@ -496,16 +552,20 @@
             
             // Ensure Georgian is included
             const georgianId = 'ქართული_ენა_და_ლიტერატურა';
-            const georgianSlider = document.getElementById('slider_' + georgianId);
-            if (georgianSlider) {
-                examScores['ქართული ენა და ლიტერატურა'] = parseInt(georgianSlider.value);
+            const georgianInput = document.getElementById('input_' + georgianId);
+            if (georgianInput) {
+                const score = parseInt(georgianInput.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores['ქართული ენა და ლიტერატურა'] = percentage;
             }
             
             // Ensure foreign language is included
             const foreignId = foreignLang.replace(/[^\w]/g, '_');
-            const foreignSlider = document.getElementById('slider_' + foreignId);
-            if (foreignSlider) {
-                examScores[foreignLang] = parseInt(foreignSlider.value);
+            const foreignInput = document.getElementById('input_' + foreignId);
+            if (foreignInput) {
+                const score = parseInt(foreignInput.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores[foreignLang] = percentage;
             }
             
             // Check minimum requirements
