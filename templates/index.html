@@ -294,7 +294,15 @@
                     </div>
                     
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">პროფესია/მიმართულება</label>
+                        <label class="form-label">
+                            პროფესია/მიმართულება
+                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#categoryInfoModal"
+                                    style="padding: 2px 8px; font-size: 0.85rem;">
+                                <i class="fas fa-info-circle"></i> რა შედის?
+                            </button>
+                        </label>
                         <select class="form-select" id="categorySelect">
                             {% for value, label in categories.items() %}
                             <option value="{{ value }}">{{ label }}</option>
@@ -709,5 +717,362 @@
             location.reload();
         }
     </script>
+    
+    <!-- Category Information Modal -->
+    <div class="modal fade" id="categoryInfoModal" tabindex="-1" aria-labelledby="categoryInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title" id="categoryInfoModalLabel">
+                        <i class="fas fa-info-circle"></i> პროფესიების/მიმართულებების აღწერა
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion" id="categoryAccordion">
+                        
+                        <!-- საღვთისმეტყველო -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category1">
+                                    <i class="fas fa-church me-2"></i> <strong>საღვთისმეტყველო</strong>
+                                </button>
+                            </h2>
+                            <div id="category1" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>თეოლოგია</li>
+                                        <li>ქრისტიანული ხელოვნებათმცოდნეობა</li>
+                                        <li>საეკლესიო არქიტექტურა</li>
+                                        <li>საეკლესიო მუსიკა და გუნდის დირიჟორობა</li>
+                                        <li>ქართული ტრადიციული მუსიკა</li>
+                                        <li>ხატწერის რესტავრაცია</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-university"></i> უნივერსიტეტები: სასულიერო სემინარიები, სასულიერო აკადემიები</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- მედიცინა და ფარმაცია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category2">
+                                    <i class="fas fa-stethoscope me-2"></i> <strong>მედიცინა და ფარმაცია</strong>
+                                </button>
+                            </h2>
+                            <div id="category2" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მედიცინა (დიპლომირებული მედიკოსი)</li>
+                                        <li>სტომატოლოგია</li>
+                                        <li>ფარმაცია</li>
+                                        <li>საექთნო საქმე</li>
+                                        <li>სამეანო საქმე</li>
+                                        <li>ფიზიკური მედიცინა და რეაბილიტაცია</li>
+                                        <li>ოკუპაციური თერაპია</li>
+                                        <li>საზოგადოებრივი ჯანდაცვა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> სპეციალური მოთხოვნები: ბიოლოგია სავალდებულოა</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IT და კომპიუტერული მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category3">
+                                    <i class="fas fa-laptop-code me-2"></i> <strong>IT და კომპიუტერული მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category3" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>კომპიუტერული მეცნიერება</li>
+                                        <li>ინფორმაციული ტექნოლოგიები</li>
+                                        <li>ინფორმატიკა</li>
+                                        <li>პროგრამული ინჟინერია</li>
+                                        <li>კიბერუსაფრთხოება</li>
+                                        <li>ხელოვნური ინტელექტი</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-chart-line"></i> პოპულარული მიმართულება: მაღალი მოთხოვნა ბაზარზე</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ბიზნესი და ეკონომიკა -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category4">
+                                    <i class="fas fa-briefcase me-2"></i> <strong>ბიზნესი და ეკონომიკა</strong>
+                                </button>
+                            </h2>
+                            <div id="category4" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ბიზნესის ადმინისტრირება</li>
+                                        <li>ეკონომიკა</li>
+                                        <li>მენეჯმენტი</li>
+                                        <li>ფინანსები</li>
+                                        <li>ტურიზმი</li>
+                                        <li>მარკეტინგი</li>
+                                        <li>ბუღალტერია</li>
+                                        <li>საერთაშორისო ბიზნესი</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სამართალი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category5">
+                                    <i class="fas fa-gavel me-2"></i> <strong>სამართალი</strong>
+                                </button>
+                            </h2>
+                            <div id="category5" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>სამართალმცოდნეობა</li>
+                                        <li>იურისპრუდენცია</li>
+                                        <li>საერთაშორისო სამართალი</li>
+                                        <li>საჯარო სამართალი</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ხელოვნება და დიზაინი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category6">
+                                    <i class="fas fa-palette me-2"></i> <strong>ხელოვნება და დიზაინი</strong>
+                                </button>
+                            </h2>
+                            <div id="category6" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>გრაფიკული დიზაინი</li>
+                                        <li>ინტერიერის დიზაინი</li>
+                                        <li>მოდის დიზაინი</li>
+                                        <li>არქიტექტურა</li>
+                                        <li>ხატვა</li>
+                                        <li>ქანდაკება</li>
+                                        <li>გრაფიკა</li>
+                                        <li>ვიზუალური ხელოვნება</li>
+                                        <li>მონუმენტური ხატწერის რესტავრაცია</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> შემოქმედებითი ტური შესაძლოა საჭირო იყოს</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- მუსიკა და თეატრი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category7">
+                                    <i class="fas fa-music me-2"></i> <strong>მუსიკა და თეატრი</strong>
+                                </button>
+                            </h2>
+                            <div id="category7" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მუსიკა (ინსტრუმენტები)</li>
+                                        <li>ვოკალი</li>
+                                        <li>თეატრი</li>
+                                        <li>კინო</li>
+                                        <li>მსახიობობა</li>
+                                        <li>რეჟისურა</li>
+                                        <li>ბალეტი</li>
+                                        <li>ქორეოგრაფია</li>
+                                        <li>დირიჟორობა</li>
+                                        <li>თეატრმცოდნეობა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> შემოქმედებითი ტური სავალდებულოა</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ინჟინერია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category8">
+                                    <i class="fas fa-cogs me-2"></i> <strong>ინჟინერია</strong>
+                                </button>
+                            </h2>
+                            <div id="category8" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>საინჟინრო მეცნიერებები</li>
+                                        <li>მშენებლობა და ხუროთმოძღვრება</li>
+                                        <li>ენერგეტიკა</li>
+                                        <li>ტრანსპორტი</li>
+                                        <li>ელექტროინჟინერია</li>
+                                        <li>მექანიკური ინჟინერია</li>
+                                        <li>სამოქალაქო ინჟინერია</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ენები და ფილოლოგია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category9">
+                                    <i class="fas fa-language me-2"></i> <strong>ენები და ფილოლოგია</strong>
+                                </button>
+                            </h2>
+                            <div id="category9" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ქართული ფილოლოგია</li>
+                                        <li>ქართული ენა და ლიტერატურა</li>
+                                        <li>ინგლისური ფილოლოგია</li>
+                                        <li>გერმანული ფილოლოგია</li>
+                                        <li>რუსული ფილოლოგია</li>
+                                        <li>თარგმანი და თარგმნობა</li>
+                                        <li>ლინგვისტიკა</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- საბუნებისმეტყველო მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category10">
+                                    <i class="fas fa-flask me-2"></i> <strong>საბუნებისმეტყველო მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category10" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მათემატიკა</li>
+                                        <li>ფიზიკა</li>
+                                        <li>ქიმია</li>
+                                        <li>ბიოლოგია</li>
+                                        <li>გეოგრაფია</li>
+                                        <li>ეკოლოგია</li>
+                                        <li>გეოლოგია</li>
+                                        <li>ასტრონომია</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სოციალური მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category11">
+                                    <i class="fas fa-users me-2"></i> <strong>სოციალური მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category11" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ფსიქოლოგია</li>
+                                        <li>პოლიტიკის მეცნიერება</li>
+                                        <li>სოციოლოგია</li>
+                                        <li>ისტორია</li>
+                                        <li>ფილოსოფია</li>
+                                        <li>ანთროპოლოგია</li>
+                                        <li>საერთაშორისო ურთიერთობები</li>
+                                        <li>საჯარო ადმინისტრირება</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სასოფლო-სამეურნეო -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category12">
+                                    <i class="fas fa-tractor me-2"></i> <strong>სასოფლო-სამეურნეო</strong>
+                                </button>
+                            </h2>
+                            <div id="category12" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>აგრონომია</li>
+                                        <li>ვეტერინარია</li>
+                                        <li>სატყეო საქმე</li>
+                                        <li>ლანდშაფტის არქიტექტურა</li>
+                                        <li>სასურსათო ტექნოლოგია</li>
+                                        <li>მეღვინეობა</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- განათლება -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category13">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i> <strong>განათლება</strong>
+                                </button>
+                            </h2>
+                            <div id="category13" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>დაწყებითი საფეხურის მასწავლებელი (ინტეგრირებული)</li>
+                                        <li>საბუნებისმეტყველო მეცნიერებების მასწავლებელი</li>
+                                        <li>მათემატიკის მასწავლებელი</li>
+                                        <li>ისტორიის მასწავლებელი</li>
+                                        <li>ქართული ენის მასწავლებელი</li>
+                                        <li>უცხოური ენის მასწავლებელი</li>
+                                        <li>პედაგოგიკა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-info-circle"></i> ხშირად 300 კრედიტიანი ინტეგრირებული პროგრამებია</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სხვა -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category14">
+                                    <i class="fas fa-ellipsis-h me-2"></i> <strong>სხვა</strong>
+                                </button>
+                            </h2>
+                            <div id="category14" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ფიზიკური აღზრდა და სპორტი</li>
+                                        <li>სამხედრო მეცნიერებები და თავდაცვა</li>
+                                        <li>ავიაცია</li>
+                                        <li>საზღვაო საქმე და ნავიგაცია</li>
+                                        <li>ჟურნალისტიკა და მედია</li>
+                                        <li>კომუნიკაციები</li>
+                                        <li>ბიბლიოთეკის მეცნიერება</li>
+                                        <li>და სხვა პროგრამები, რომლებიც არ ხვდება ზემოთ ჩამოთვლილ კატეგორიებში</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> დახურვა
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
