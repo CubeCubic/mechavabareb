@@ -10,14 +10,9 @@ import os
 app = Flask(__name__)
 
 # Инициализируем систему рекомендаций
-# Проверяем, где находится база данных
-import os
-DB_PATH = os.environ.get('DATABASE_PATH', '/mnt/project/programs_database.csv')
+DB_PATH = os.environ.get('DATABASE_PATH', 'programs_database.csv')
 if not os.path.exists(DB_PATH):
-    # Пробуем локальный путь
-    DB_PATH = 'programs_database.csv'
-    if not os.path.exists(DB_PATH):
-        raise FileNotFoundError("База данных programs_database.csv не найдена!")
+    raise FileNotFoundError("ბაზა მონაცემები programs_database.csv არ მოიძებნა!")
 
 system = UniversityRecommendationSystem(DB_PATH)
 
@@ -92,12 +87,12 @@ ALL_EXAMS = [
 def index():
     """Главная страница"""
     return render_template('index.html',
-                         cities=CITIES,
-                         uni_types=UNI_TYPES,
-                         categories=CATEGORIES,
-                         languages=LANGUAGES,
-                         foreign_languages=FOREIGN_LANGUAGES,
-                         all_exams=ALL_EXAMS)
+                           cities=CITIES,
+                           uni_types=UNI_TYPES,
+                           categories=CATEGORIES,
+                           languages=LANGUAGES,
+                           foreign_languages=FOREIGN_LANGUAGES,
+                           all_exams=ALL_EXAMS)
 
 
 @app.route('/get_required_exams', methods=['POST'])
@@ -128,26 +123,15 @@ def get_required_exams():
         })
     
     # Получаем необходимые экзамены
-    exams = system.get_required_exams(
-        city=city if city != 'ყველა' else None,
-        uni_type=uni_type if uni_type != 'ყველა' else None,
-        category=category if category != 'ყველა' else None,
-        teaching_language=teaching_language if teaching_language != 'ყველა' else None
-    )
+    exams = system.get_required_exams(filtered)
     
     # Фильтруем выборочные экзамены (исключаем мусорные данные)
-    elective_clean = []
-    for exam in exams['elective']:
-        exam_str = str(exam).strip()
-        # Исключаем числа и процентые обозначения
-        if exam_str and not exam_str.replace('%', '').replace('-', '').replace('ზე', '').replace('მეტი', '').strip().isdigit():
-            if exam_str not in ['25%', '30%', '40%', '50%']:
-                elective_clean.append(exam_str)
+    elective_clean = [exam for exam in exams['elective'] if exam and not exam.replace('%', '').replace('-', '').replace('ზე', '').replace('მეტი', '').strip().isdigit() and exam not in ['25%', '30%', '40%', '50%']]
     
     return jsonify({
         'success': True,
         'programs_found': len(filtered),
-        'mandatory_exams': exams['mandatory'],
+        'mandatory_exams': list(exams['mandatory_core']),
         'elective_exams': elective_clean[:15]  # Ограничиваем количество
     })
 
@@ -169,7 +153,7 @@ def get_recommendations():
     # Получаем баллы по экзаменам
     exam_scores_raw = data.get('exam_scores', {})
     
-    # Проверяем обязательные экзамены
+    # Проверка обязательных экзаменов
     if 'ქართული ენა და ლიტერატურა' not in exam_scores_raw:
         return jsonify({
             'success': False,
@@ -182,7 +166,7 @@ def get_recommendations():
             'message': 'გთხოვთ აირჩიოთ უცხოური ენა და შეიყვანოთ ქულა'
         })
     
-    # Проверяем что есть хотя бы один дополнительный предмет
+    # Проверка на минимум один дополнительный предмет
     other_exams = {k: v for k, v in exam_scores_raw.items() 
                    if k not in ['ქართული ენა და ლიტერატურა', foreign_language]}
     
@@ -192,11 +176,10 @@ def get_recommendations():
             'message': 'გთხოვთ აირჩიოთ მინიმუმ ერთი დამატებითი საგანი'
         })
     
-    # Подготавливаем баллы: заменяем конкретный иностранный язык на "უცხოური ენა"
+    # Подготавливаем баллы: заменяем конкретный иностранный на "უცხოური ენა"
     exam_scores = exam_scores_raw.copy()
     if foreign_language:
         foreign_score = exam_scores.pop(foreign_language, 0)
-        # Добавляем под всеми возможными вариантами написания "უცხოური ენა"
         exam_scores['უცხოური ენა'] = foreign_score
         exam_scores['უცხოური ენა (ინგ.)'] = foreign_score
         exam_scores['უცხოური ენა (გერ.; ინგ.; რუს.; ფრან.)'] = foreign_score
