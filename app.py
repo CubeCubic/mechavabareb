@@ -128,7 +128,12 @@ def get_required_exams():
         })
     
     # Получаем необходимые экзамены
-    exams = system.get_required_exams(filtered)
+    exams = system.get_required_exams(
+        city=city if city != 'ყველა' else None,
+        uni_type=uni_type if uni_type != 'ყველა' else None,
+        category=category if category != 'ყველა' else None,
+        teaching_language=teaching_language if teaching_language != 'ყველა' else None
+    )
     
     # Фильтруем выборочные экзамены (исключаем мусорные данные)
     elective_clean = []
@@ -142,7 +147,7 @@ def get_required_exams():
     return jsonify({
         'success': True,
         'programs_found': len(filtered),
-        'mandatory_exams': list(exams['mandatory_core']),
+        'mandatory_exams': exams['mandatory'],
         'elective_exams': elective_clean[:15]  # Ограничиваем количество
     })
 
