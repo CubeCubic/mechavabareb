@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>მეჩავაბარებ — ფაკულტეტების შერჩევა</title>
+    <title>უნივერსიტეტის შერჩევის სისტემა</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -127,6 +127,22 @@
             border-color: #764ba2 !important;
         }
         
+        .score-percentage {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .score-slider {
+            margin-top: 10px;
+        }
+        
+        .score-value {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
         .recommendation-card {
             background: white;
             border-radius: 15px;
@@ -233,139 +249,162 @@
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-graduation-cap"></i> უნივერსიტეტის შერჩევის სისტემა</h1>
-            <p>აირჩიეთ საუკეთესო პროგრამა თქვენი ქულების მიხედვით</p>
+            <p>მოძებნეთ თქვენთვის შესაფერისი საგანმანათლებლო პროგრამა</p>
         </div>
         
         <!-- Step Indicator -->
         <div class="step-indicator">
             <div class="step active" id="step1">
                 <div class="step-number">1</div>
-                <small>ფილტრები</small>
+                <div>ფილტრები</div>
             </div>
             <div class="step" id="step2">
                 <div class="step-number">2</div>
-                <small>გამოცდები</small>
+                <div>ქულები</div>
             </div>
             <div class="step" id="step3">
                 <div class="step-number">3</div>
-                <small>შედეგები</small>
+                <div>შედეგები</div>
             </div>
         </div>
         
-        <!-- Filters Section -->
+        <!-- Step 1: Filters -->
         <div class="card" id="filtersSection">
             <div class="card-header">
-                <i class="fas fa-filter"></i> შერჩევის კრიტერიუმები
+                <i class="fas fa-filter"></i> ფილტრები
             </div>
-            <div class="card-body p-4">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fas fa-city"></i> ქალაქი</label>
-                        <select id="citySelect" class="form-select">
-                            <option value="ყველა">ყველა ქალაქი</option>
-                            <option value="თბილისი">თბილისი</option>
-                            <option value="ბათუმი">ბათუმი</option>
-                            <option value="ქუთაისი">ქუთაისი</option>
-                            <!-- Добавьте остальные города -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">ქალაქი</label>
+                        <select class="form-select" id="citySelect">
+                            {% for value, label in cities.items() %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fas fa-university"></i> უნივერსიტეტის ტიპი</label>
-                        <select id="uniTypeSelect" class="form-select">
-                            <option value="ყველა">ყველა ტიპი</option>
-                            <option value="სახელმწიფო">სახელმწიფო (უფასო)</option>
-                            <option value="კერძო">კერძო (ფასიანი)</option>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">უნივერსიტეტის ტიპი</label>
+                        <select class="form-select" id="uniTypeSelect">
+                            {% for value, label in uni_types.items() %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fas fa-book"></i> მიმართულება</label>
-                        <select id="categorySelect" class="form-select">
-                            <option value="ყველა">ყველა მიმართულება</option>
-                            <option value="მედიცინა და ფარმაცია">მედიცინა და ფარმაცია</option>
-                            <!-- Добавьте остальные категории -->
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            პროფესია/მიმართულება
+                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#categoryInfoModal"
+                                    style="padding: 2px 8px; font-size: 0.85rem;">
+                                <i class="fas fa-info-circle"></i> რა შედის?
+                            </button>
+                        </label>
+                        <select class="form-select" id="categorySelect">
+                            {% for value, label in categories.items() %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fas fa-language"></i> სწავლების ენა</label>
-                        <select id="languageSelect" class="form-select">
-                            <option value="ყველა">ყველა ენა</option>
-                            <option value="ქართული">ქართული</option>
-                            <option value="ინგლისური">ინგლისური</option>
-                            <option value="რუსული">რუსული</option>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">სწავლების ენა</label>
+                        <select class="form-select" id="languageSelect">
+                            {% for value, label in languages.items() %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
-                <div class="text-center mt-4">
-                    <button onclick="loadExams()" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> შემდეგი
+                
+                <div class="text-end">
+                    <button class="btn btn-primary btn-lg" onclick="loadExams()">
+                        <i class="fas fa-arrow-right"></i> გაგრძელება
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Exams Section -->
-        <div class="card" id="examsSection" style="display: none;">
+        <!-- Step 2: Exams -->
+        <div class="card" id="examsSection">
             <div class="card-header">
                 <i class="fas fa-pencil-alt"></i> გამოცდების ქულები
             </div>
-            <div class="card-body p-4">
-                <div class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle"></i> შეიყვანეთ თქვენი სავარაუდო ქულები (0-100). მინიმუმ 3 საგანი: ქართული + უცხოური + 1 დამატებითი.
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>შენიშვნა:</strong> სავალდებულოა ქართული ენისა და უცხოური ენის ჩაბარება, დამატებით მინიმუმ 1 საგანი.
                 </div>
                 
-                <label class="form-label"><i class="fas fa-globe"></i> უცხოური ენა (აირჩიეთ ერთი)</label>
-                <select id="foreignLanguageSelect" class="form-select mb-3">
-                    <option value="">აირჩიეთ ენა</option>
-                    <option value="ინგლისური ენა">ინგლისური</option>
-                    <option value="გერმანული ენა">გერმანული</option>
-                    <option value="ფრანგული ენა">ფრანგული</option>
-                    <option value="რუსული ენა">რუსული</option>
-                </select>
+                <!-- Foreign Language Selection -->
+                <div class="mb-4">
+                    <label class="form-label"><i class="fas fa-language"></i> აირჩიეთ უცხოური ენა (სავალდებულო)</label>
+                    <select class="form-select" id="foreignLanguageSelect">
+                        <option value="">-- აირჩიეთ --</option>
+                        {% for value, label in foreign_languages.items() %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 
-                <div id="mandatoryExamsContainer"></div>
-                <div id="electiveExamsContainer"></div>
+                <div id="examsList"></div>
                 
-                <div class="d-flex justify-content-between mt-4">
-                    <button onclick="backToFilters()" class="btn btn-secondary">
+                <div class="text-end mt-4">
+                    <button class="btn btn-secondary" onclick="backToFilters()">
                         <i class="fas fa-arrow-left"></i> უკან
                     </button>
-                    <button onclick="getRecommendations()" class="btn btn-primary">
-                        <i class="fas fa-search"></i> ძებნა
+                    <button class="btn btn-primary btn-lg" onclick="getRecommendations()">
+                        <i class="fas fa-search"></i> შედეგების ჩვენება
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Results Section -->
-        <div id="resultsSection" style="display: none;">
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-trophy"></i> რეკომენდაციები
-                </div>
-                <div class="card-body p-4" id="resultsContainer">
-                    <!-- Результаты здесь -->
-                </div>
+        <!-- Step 3: Results -->
+        <div class="card" id="resultsSection">
+            <div class="card-header">
+                <i class="fas fa-star"></i> რეკომენდებული პროგრამები
             </div>
-            <div class="text-center mt-4">
-                <button onclick="startOver()" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> თავიდან დაწყება
-                </button>
+            <div class="card-body">
+                <div id="resultsContainer"></div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary" onclick="startOver()">
+                        <i class="fas fa-redo"></i> თავიდან დაწყება
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
+        let currentExams = {};
+        let examScores = {};
+        
         async function loadExams() {
             const city = document.getElementById('citySelect').value;
-            const uni_type = document.getElementById('uniTypeSelect').value;
+            const uniType = document.getElementById('uniTypeSelect').value;
             const category = document.getElementById('categorySelect').value;
-            teaching_language = document.getElementById('languageSelect').value;
+            const teachingLanguage = document.getElementById('languageSelect').value;
             
             try {
                 const response = await fetch('/get_required_exams', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({city, uni_type, category, teaching_language})
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        city: city,
+                        uni_type: uniType,
+                        category: category,
+                        teaching_language: teachingLanguage
+                    })
                 });
                 
                 const data = await response.json();
@@ -375,75 +414,174 @@
                     return;
                 }
                 
+                currentExams = data;
+                renderExams();
+                
+                // Show exams section, hide filters
                 document.getElementById('filtersSection').style.display = 'none';
                 document.getElementById('examsSection').style.display = 'block';
                 
+                // Update steps
                 document.getElementById('step1').classList.add('completed');
                 document.getElementById('step1').classList.remove('active');
                 document.getElementById('step2').classList.add('active');
                 
-                let mandatoryHtml = '<h5 class="mb-3">ობლიგატორული საგნები</h5>';
-                data.mandatory_exams.forEach(exam => {
-                    mandatoryHtml += `
-                        <div class="exam-score-input">
-                            <label><input type="checkbox" class="exam-checkbox" checked disabled> ${exam}</label>
-                            <input type="number" class="form-control score-input" min="0" max="100" value="0" data-exam="${exam}">
-                            <small>მინიმუმი: 0, მაქსიმუმი: 100</small>
-                        </div>
-                    `;
-                });
-                document.getElementById('mandatoryExamsContainer').innerHTML = mandatoryHtml;
-                
-                let electiveHtml = '<h5 class="mb-3">არჩევითი საგნები (აირჩიეთ მინიმუმ 1)</h5>';
-                data.elective_exams.forEach(exam => {
-                    electiveHtml += `
-                        <div class="exam-score-input">
-                            <label><input type="checkbox" class="exam-checkbox" data-exam="${exam}"> ${exam}</label>
-                            <input type="number" class="form-control score-input" min="0" max="100" value="0" data-exam="${exam}" disabled>
-                            <small>მინიმუმი: 0, მაქსიმუმი: 100</small>
-                        </div>
-                    `;
-                });
-                document.getElementById('electiveExamsContainer').innerHTML = electiveHtml;
-                
-                document.querySelectorAll('.exam-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', (e) => {
-                        const input = e.target.parentElement.nextElementSibling;
-                        input.disabled = !e.target.checked;
-                    });
-                });
-                
             } catch (error) {
                 alert('შეცდომა მოხდა. გთხოვთ სცადოთ ხელახლა.');
+                console.error(error);
             }
+        }
+        
+        function renderExams() {
+            const container = document.getElementById('examsList');
+            let html = '<h5 class="mb-3">სავალდებულო საგნები:</h5>';
+            
+            // Always show Georgian
+            html += createExamInput('ქართული ენა და ლიტერატურა', true, true);
+            
+            // Show selected foreign language (will be enabled after selection)
+            html += '<div id="foreignLanguageExam"></div>';
+            
+            html += '<h5 class="mb-3 mt-4">დამატებითი საგნები (აირჩიეთ მინიმუმ 1):</h5>';
+            
+            currentExams.elective_exams.forEach(exam => {
+                html += createExamInput(exam, false, false);
+            });
+            
+            container.innerHTML = html;
+            
+            // Add event listener for foreign language selection
+            document.getElementById('foreignLanguageSelect').addEventListener('change', function() {
+                const selected = this.value;
+                if (selected) {
+                    document.getElementById('foreignLanguageExam').innerHTML = 
+                        createExamInput(selected, true, true);
+                }
+            });
+        }
+        
+        function createExamInput(examName, isRequired, isChecked) {
+            const safeId = examName.replace(/[^\w]/g, '_');
+            
+            // Определяем максимальный балл для экзамена (все экзамены - 60 баллов)
+            const maxScore = 60;
+            const minScore = 0;
+            
+            return `
+                <div class="exam-score-input">
+                    <label>
+                        <input type="checkbox" class="exam-checkbox" 
+                               id="check_${safeId}" 
+                               ${isRequired ? 'checked disabled' : ''} 
+                               ${isChecked ? 'checked' : ''}
+                               onchange="toggleExam('${examName}', this.checked)">
+                        <strong>${examName}</strong>
+                        ${isRequired ? '<span class="badge bg-danger ms-2">სავალდებულო</span>' : ''}
+                    </label>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-8">
+                            <input type="number" class="form-control score-input" 
+                                   id="input_${safeId}" 
+                                   min="${minScore}" 
+                                   max="${maxScore}" 
+                                   value="30" 
+                                   ${!isRequired && !isChecked ? 'disabled' : ''}
+                                   oninput="updateScoreFromInput('${examName}', this.value, ${maxScore})"
+                                   style="text-align: center; font-size: 1.1rem; font-weight: 600;">
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span>მინ: ${minScore}</span>
+                                <span>მაქს: ${maxScore}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="score-percentage" id="percent_${safeId}" style="font-size: 1.2rem; font-weight: 700; color: #667eea;">
+                                50%
+                            </div>
+                            <small class="text-muted">პროცენტი</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleExam(examName, isChecked) {
+            const safeId = examName.replace(/[^\w]/g, '_');
+            const input = document.getElementById('input_' + safeId);
+            
+            if (isChecked) {
+                input.disabled = false;
+                const score = parseInt(input.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores[examName] = percentage;
+            } else {
+                input.disabled = true;
+                delete examScores[examName];
+            }
+        }
+        
+        function updateScoreFromInput(examName, score, maxScore) {
+            const safeId = examName.replace(/[^\w]/g, '_');
+            const scoreValue = parseInt(score) || 0;
+            
+            // Ограничиваем значение
+            const limitedScore = Math.max(0, Math.min(maxScore, scoreValue));
+            
+            // Обновляем поле ввода если значение было ограничено
+            const input = document.getElementById('input_' + safeId);
+            if (input && input.value != limitedScore) {
+                input.value = limitedScore;
+            }
+            
+            // Вычисляем процент
+            const percentage = (limitedScore / maxScore) * 100;
+            
+            // Обновляем отображение процента
+            const percentElement = document.getElementById('percent_' + safeId);
+            if (percentElement) {
+                percentElement.textContent = percentage.toFixed(1) + '%';
+            }
+            
+            // Сохраняем в examScores как процент для совместимости с бэкендом
+            examScores[examName] = percentage;
+        }
+        
+        // Старая функция для совместимости
+        function updateScore(examName, value) {
+            updateScoreFromInput(examName, value, 60);
         }
         
         async function getRecommendations() {
             const foreignLang = document.getElementById('foreignLanguageSelect').value;
+            
             if (!foreignLang) {
                 alert('გთხოვთ აირჩიოთ უცხოური ენა');
                 return;
             }
             
-            const examScores = {};
-            document.querySelectorAll('.score-input').forEach(input => {
-                const exam = input.dataset.exam;
-                const checkbox = input.previousElementSibling.querySelector('.exam-checkbox');
-                if (checkbox.checked) {
-                    let value = parseInt(input.value);
-                    if (value < 0) value = 0;
-                    if (value > 100) value = 100;
-                    examScores[exam] = value;
-                }
-            });
-            
-            if (!examScores['ქართული ენა და ლიტერატურა'] || !examScores[foreignLang]) {
-                alert('გთხოვთ შეიყვანოთ ქულები ობლიგატორული საგნებისთვის');
-                return;
+            // Ensure Georgian is included
+            const georgianId = 'ქართული_ენა_და_ლიტერატურა';
+            const georgianInput = document.getElementById('input_' + georgianId);
+            if (georgianInput) {
+                const score = parseInt(georgianInput.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores['ქართული ენა და ლიტერატურა'] = percentage;
             }
             
-            const otherCount = Object.keys(examScores).length - 2;
-            if (otherCount < 1) {
+            // Ensure foreign language is included
+            const foreignId = foreignLang.replace(/[^\w]/g, '_');
+            const foreignInput = document.getElementById('input_' + foreignId);
+            if (foreignInput) {
+                const score = parseInt(foreignInput.value) || 30;
+                const percentage = (score / 60) * 100;
+                examScores[foreignLang] = percentage;
+            }
+            
+            // Check minimum requirements
+            const otherExams = Object.keys(examScores).filter(
+                k => k !== 'ქართული ენა და ლიტერატურა' && k !== foreignLang
+            );
+            
+            if (otherExams.length === 0) {
                 alert('გთხოვთ აირჩიოთ მინიმუმ ერთი დამატებითი საგანი');
                 return;
             }
@@ -452,7 +590,7 @@
                 document.getElementById('resultsContainer').innerHTML = `
                     <div class="spinner-container">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">იტვირთება...</span>
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                         <p class="mt-3">იტვირთება შედეგები...</p>
                     </div>
@@ -486,9 +624,11 @@
                 
                 renderResults(data.recommendations);
                 
+                // Show results section
                 document.getElementById('examsSection').style.display = 'none';
                 document.getElementById('resultsSection').style.display = 'block';
                 
+                // Update steps
                 document.getElementById('step2').classList.add('completed');
                 document.getElementById('step2').classList.remove('active');
                 document.getElementById('step3').classList.add('active');
@@ -577,5 +717,362 @@
             location.reload();
         }
     </script>
+    
+    <!-- Category Information Modal -->
+    <div class="modal fade" id="categoryInfoModal" tabindex="-1" aria-labelledby="categoryInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title" id="categoryInfoModalLabel">
+                        <i class="fas fa-info-circle"></i> პროფესიების/მიმართულებების აღწერა
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion" id="categoryAccordion">
+                        
+                        <!-- საღვთისმეტყველო -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category1">
+                                    <i class="fas fa-church me-2"></i> <strong>საღვთისმეტყველო</strong>
+                                </button>
+                            </h2>
+                            <div id="category1" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>თეოლოგია</li>
+                                        <li>ქრისტიანული ხელოვნებათმცოდნეობა</li>
+                                        <li>საეკლესიო არქიტექტურა</li>
+                                        <li>საეკლესიო მუსიკა და გუნდის დირიჟორობა</li>
+                                        <li>ქართული ტრადიციული მუსიკა</li>
+                                        <li>ხატწერის რესტავრაცია</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-university"></i> უნივერსიტეტები: სასულიერო სემინარიები, სასულიერო აკადემიები</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- მედიცინა და ფარმაცია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category2">
+                                    <i class="fas fa-stethoscope me-2"></i> <strong>მედიცინა და ფარმაცია</strong>
+                                </button>
+                            </h2>
+                            <div id="category2" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მედიცინა (დიპლომირებული მედიკოსი)</li>
+                                        <li>სტომატოლოგია</li>
+                                        <li>ფარმაცია</li>
+                                        <li>საექთნო საქმე</li>
+                                        <li>სამეანო საქმე</li>
+                                        <li>ფიზიკური მედიცინა და რეაბილიტაცია</li>
+                                        <li>ოკუპაციური თერაპია</li>
+                                        <li>საზოგადოებრივი ჯანდაცვა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> სპეციალური მოთხოვნები: ბიოლოგია სავალდებულოა</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IT და კომპიუტერული მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category3">
+                                    <i class="fas fa-laptop-code me-2"></i> <strong>IT და კომპიუტერული მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category3" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>კომპიუტერული მეცნიერება</li>
+                                        <li>ინფორმაციული ტექნოლოგიები</li>
+                                        <li>ინფორმატიკა</li>
+                                        <li>პროგრამული ინჟინერია</li>
+                                        <li>კიბერუსაფრთხოება</li>
+                                        <li>ხელოვნური ინტელექტი</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-chart-line"></i> პოპულარული მიმართულება: მაღალი მოთხოვნა ბაზარზე</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ბიზნესი და ეკონომიკა -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category4">
+                                    <i class="fas fa-briefcase me-2"></i> <strong>ბიზნესი და ეკონომიკა</strong>
+                                </button>
+                            </h2>
+                            <div id="category4" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ბიზნესის ადმინისტრირება</li>
+                                        <li>ეკონომიკა</li>
+                                        <li>მენეჯმენტი</li>
+                                        <li>ფინანსები</li>
+                                        <li>ტურიზმი</li>
+                                        <li>მარკეტინგი</li>
+                                        <li>ბუღალტერია</li>
+                                        <li>საერთაშორისო ბიზნესი</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სამართალი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category5">
+                                    <i class="fas fa-gavel me-2"></i> <strong>სამართალი</strong>
+                                </button>
+                            </h2>
+                            <div id="category5" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>სამართალმცოდნეობა</li>
+                                        <li>იურისპრუდენცია</li>
+                                        <li>საერთაშორისო სამართალი</li>
+                                        <li>საჯარო სამართალი</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ხელოვნება და დიზაინი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category6">
+                                    <i class="fas fa-palette me-2"></i> <strong>ხელოვნება და დიზაინი</strong>
+                                </button>
+                            </h2>
+                            <div id="category6" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>გრაფიკული დიზაინი</li>
+                                        <li>ინტერიერის დიზაინი</li>
+                                        <li>მოდის დიზაინი</li>
+                                        <li>არქიტექტურა</li>
+                                        <li>ხატვა</li>
+                                        <li>ქანდაკება</li>
+                                        <li>გრაფიკა</li>
+                                        <li>ვიზუალური ხელოვნება</li>
+                                        <li>მონუმენტური ხატწერის რესტავრაცია</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> შემოქმედებითი ტური შესაძლოა საჭირო იყოს</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- მუსიკა და თეატრი -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category7">
+                                    <i class="fas fa-music me-2"></i> <strong>მუსიკა და თეატრი</strong>
+                                </button>
+                            </h2>
+                            <div id="category7" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მუსიკა (ინსტრუმენტები)</li>
+                                        <li>ვოკალი</li>
+                                        <li>თეატრი</li>
+                                        <li>კინო</li>
+                                        <li>მსახიობობა</li>
+                                        <li>რეჟისურა</li>
+                                        <li>ბალეტი</li>
+                                        <li>ქორეოგრაფია</li>
+                                        <li>დირიჟორობა</li>
+                                        <li>თეატრმცოდნეობა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-exclamation-triangle"></i> შემოქმედებითი ტური სავალდებულოა</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ინჟინერია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category8">
+                                    <i class="fas fa-cogs me-2"></i> <strong>ინჟინერია</strong>
+                                </button>
+                            </h2>
+                            <div id="category8" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>საინჟინრო მეცნიერებები</li>
+                                        <li>მშენებლობა და ხუროთმოძღვრება</li>
+                                        <li>ენერგეტიკა</li>
+                                        <li>ტრანსპორტი</li>
+                                        <li>ელექტროინჟინერია</li>
+                                        <li>მექანიკური ინჟინერია</li>
+                                        <li>სამოქალაქო ინჟინერია</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ენები და ფილოლოგია -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category9">
+                                    <i class="fas fa-language me-2"></i> <strong>ენები და ფილოლოგია</strong>
+                                </button>
+                            </h2>
+                            <div id="category9" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ქართული ფილოლოგია</li>
+                                        <li>ქართული ენა და ლიტერატურა</li>
+                                        <li>ინგლისური ფილოლოგია</li>
+                                        <li>გერმანული ფილოლოგია</li>
+                                        <li>რუსული ფილოლოგია</li>
+                                        <li>თარგმანი და თარგმნობა</li>
+                                        <li>ლინგვისტიკა</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- საბუნებისმეტყველო მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category10">
+                                    <i class="fas fa-flask me-2"></i> <strong>საბუნებისმეტყველო მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category10" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>მათემატიკა</li>
+                                        <li>ფიზიკა</li>
+                                        <li>ქიმია</li>
+                                        <li>ბიოლოგია</li>
+                                        <li>გეოგრაფია</li>
+                                        <li>ეკოლოგია</li>
+                                        <li>გეოლოგია</li>
+                                        <li>ასტრონომია</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სოციალური მეცნიერებები -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category11">
+                                    <i class="fas fa-users me-2"></i> <strong>სოციალური მეცნიერებები</strong>
+                                </button>
+                            </h2>
+                            <div id="category11" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ფსიქოლოგია</li>
+                                        <li>პოლიტიკის მეცნიერება</li>
+                                        <li>სოციოლოგია</li>
+                                        <li>ისტორია</li>
+                                        <li>ფილოსოფია</li>
+                                        <li>ანთროპოლოგია</li>
+                                        <li>საერთაშორისო ურთიერთობები</li>
+                                        <li>საჯარო ადმინისტრირება</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სასოფლო-სამეურნეო -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category12">
+                                    <i class="fas fa-tractor me-2"></i> <strong>სასოფლო-სამეურნეო</strong>
+                                </button>
+                            </h2>
+                            <div id="category12" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>აგრონომია</li>
+                                        <li>ვეტერინარია</li>
+                                        <li>სატყეო საქმე</li>
+                                        <li>ლანდშაფტის არქიტექტურა</li>
+                                        <li>სასურსათო ტექნოლოგია</li>
+                                        <li>მეღვინეობა</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- განათლება -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category13">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i> <strong>განათლება</strong>
+                                </button>
+                            </h2>
+                            <div id="category13" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>დაწყებითი საფეხურის მასწავლებელი (ინტეგრირებული)</li>
+                                        <li>საბუნებისმეტყველო მეცნიერებების მასწავლებელი</li>
+                                        <li>მათემატიკის მასწავლებელი</li>
+                                        <li>ისტორიის მასწავლებელი</li>
+                                        <li>ქართული ენის მასწავლებელი</li>
+                                        <li>უცხოური ენის მასწავლებელი</li>
+                                        <li>პედაგოგიკა</li>
+                                    </ul>
+                                    <p class="text-muted"><small><i class="fas fa-info-circle"></i> ხშირად 300 კრედიტიანი ინტეგრირებული პროგრამებია</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- სხვა -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#category14">
+                                    <i class="fas fa-ellipsis-h me-2"></i> <strong>სხვა</strong>
+                                </button>
+                            </h2>
+                            <div id="category14" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>რა შედის:</strong></p>
+                                    <ul>
+                                        <li>ფიზიკური აღზრდა და სპორტი</li>
+                                        <li>სამხედრო მეცნიერებები და თავდაცვა</li>
+                                        <li>ავიაცია</li>
+                                        <li>საზღვაო საქმე და ნავიგაცია</li>
+                                        <li>ჟურნალისტიკა და მედია</li>
+                                        <li>კომუნიკაციები</li>
+                                        <li>ბიბლიოთეკის მეცნიერება</li>
+                                        <li>და სხვა პროგრამები, რომლებიც არ ხვდება ზემოთ ჩამოთვლილ კატეგორიებში</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> დახურვა
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
