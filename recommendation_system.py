@@ -267,5 +267,4 @@ class UniversityRecommendationSystem:
         results.sort(key=lambda x: x['compatibility'], reverse=True)
         
         return results[:top_n]
-
-                              "Добавил filter_programs и полный расчёт"
+        
