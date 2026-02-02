@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
+import re
 
 class UniversityRecommendationSystem:
-    def __init__(self, database_path='programs_database.csv'):
+    def __init__(self, database_path: str):
         self.df = pd.read_csv(database_path)
         self.max_scores = {
             'ქართული ენა და ლიტერატურა': 60,
@@ -21,90 +23,95 @@ class UniversityRecommendationSystem:
     def parse_exams(self, exams_str):
         if pd.isna(exams_str):
             return []
-        items = []
-        for part in exams_str.split(';'):
-            part = part.strip()
-            if not part: continue
-            subparts = part.split(':')
-            if len(subparts) >= 3:
-                subject = subparts[0].strip()
-                coef = int(subparts[1])
-                min_perc = float(subparts[2].replace('%','').replace('-','').strip())
-                items.append({'subject': subject, 'coef': coef, 'min_perc': min_perc})
-        return items
+        exams = []
+        lines = re.split(r';| \d ', exams_str)  # Разделяем по ; или цифрам
+        for line in lines:
+            line = line.strip()
+            if not line: continue
+            
+            # Ищем предмет:coef:min:pri:places
+            match = re.search(r'(\w+.+?) (\d) (\d+%-ზე მეტი) (\d) (\d*)', line)
+            if match:
+                subject = match.group(1).strip()
+                coef = int(match.group(2))
+                min_str = match.group(3).replace('%-ზე მეტი', '')
+                min_perc = float(min_str)
+                pri = int(match.group(4))
+                places = int(match.group(5)) if match.group(5) else 0
+                exams.append({
+                    'subject': subject,
+                    'coef': coef,
+                    'min_perc': min_perc,
+                    'pri': pri,
+                    'places': places
+                })
+        return exams
 
     def calculate_score(self, row, user_scores):
+        mandatory = self.parse_exams(row['mandatory_exams'])
+        elective = self.parse_exams(row['elective_exams'])
+        
         total = 0
         failed = []
         used = []
-
+        max_possible = 0
+        
         # Обязательные
-        mandatory = self.parse_exams(row['mandatory_exams'])
         for m in mandatory:
             subj = m['subject']
             user = user_scores.get(subj, 0)
             max_s = self.max_scores.get(subj, 100)
             min_s = (m['min_perc'] / 100) * max_s
+            max_possible += max_s * m['coef']
             if user < min_s:
                 failed.append(subj)
             else:
-                total += user * m['coef']
-                used.append(f"{subj}: {user} × {m['coef']} = {user * m['coef']}")
-
-        # Выборочные — берём лучший
-        elective = self.parse_exams(row['elective_exams'])
+                contrib = user * m['coef']
+                total += contrib
+                used.append(f"{subj}: {user} × {m['coef']} = {contrib}")
+        
+        # Выборочные — лучший
         best_elec = 0
-        best_subj = ''
         for e in elective:
             subj = e['subject']
             user = user_scores.get(subj, 0)
             max_s = self.max_scores.get(subj, 100)
             min_s = (e['min_perc'] / 100) * max_s
             if user >= min_s:
-                score = user * e['coef']
-                if score > best_elec:
-                    best_elec = score
-                    best_subj = subj
-
-        if best_elec > 0:
-            total += best_elec
-            used.append(f"{best_subj} (არჩევითი): {user_scores.get(best_subj,0)} × {e['coef']} = {best_elec}")
-
-        max_possible = 0
-        for m in mandatory:
-            max_possible += self.max_scores.get(m['subject'], 100) * m['coef']
-        if elective:
-            max_possible += max([self.max_scores.get(e['subject'], 100) * e['coef'] for e in elective])
-
+                contrib = user * e['coef']
+                if contrib > best_elec:
+                    best_elec = contrib
+        
+        total += best_elec
+        max_possible += max([e['coef'] * self.max_scores.get(e['subject'], 100) for e in elective]) if elective else 0
+        
         compatibility = (total / max_possible * 100) if max_possible > 0 else 0
-
+        
         chance = "არ აკმაყოფილებს მინიმუმს" if failed else \
-                 f"ძალიან მაღალი ({compatibility:.1f}%)" if compatibility >= 85 else \
-                 f"მაღალი ({compatibility:.1f}%)" if compatibility >= 70 else \
-                 f"საშუალო ({compatibility:.1f}%)" if compatibility >= 50 else \
-                 f"დაბალი ({compatibility:.1f}%)"
-
+                 "ძალიან მაღალი" if compatibility >= 90 else \
+                 "მაღალი" if compatibility >= 70 else \
+                 "საშუალო" if compatibility >= 50 else "დაბალი"
+        
         return {
-            'total': round(total),
             'compatibility': round(compatibility, 1),
             'chance': chance,
+            'total': round(total, 2),
             'failed': failed,
-            'used': used,
-            'places': row['total_places']
+            'used': used
         }
 
-    def recommend(self, user_scores):
+    def recommend_programs(self, exam_scores, top_n=20):
         results = []
         for _, row in self.df.iterrows():
-            score_data = self.calculate_score(row, user_scores)
-            results.append({
-                'program': row['program_name'],
-                'qualification': row['qualification'],
-                'uni_code': row['university_code'],
-                'places': score_data['places'],
-                'total': score_data['total'],
-                'compatibility': score_data['compatibility'],
-                'chance': score_data['chance']
-            })
+            score_data = self.calculate_score(row, exam_scores)
+            if score_data['chance'] != 'არ აკმაყოფილებს მინიმუმს':
+                results.append({
+                    'program_name': row['program_name'],
+                    'university_code': row['university_code'],
+                    'compatibility': score_data['compatibility'],
+                    'admission_chance': score_data['chance']
+                })
+        
         results.sort(key=lambda x: x['compatibility'], reverse=True)
-        return results[:10]
+        
+        return results[:top_n]
