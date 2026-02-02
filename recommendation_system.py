@@ -10,7 +10,7 @@ class UniversityRecommendationSystem:
     
     def prepare_data(self):
         # Тип вуза (государственный = 2250 GEL, но это условно)
-        self.df['uni_type'] = np.where(self.df['annual_tuition'] == 2250.0, 'სახელმწიფო', 'კერძო')
+        self.df['uni_type'] = np.where(self.df.get('annual_tuition', 0) == 2250.0, 'სახელმწიფო', 'კერძო')
         self.df['program_name_clean'] = self.df['program_name'].str.strip()
         self.df['category'] = self.df.apply(self._categorize_program, axis=1)
         self.df['city'] = self.df['university_code'].apply(self._get_city)
@@ -63,7 +63,6 @@ class UniversityRecommendationSystem:
             36: 'თბილისი', 40: 'თბილისი', 52: 'თბილისი', 53: 'ბათუმი',
             64: 'თბილისი', 71: 'თელავი', 85: 'თბილისი', 88: 'თბილისი',
             97: 'ზუგდიდი', 98: 'თბილისი', 114: 'ბათუმი', 115: 'თბილისი',
-            # Добавь остальные по своему файлу umaglesebi.xlsx
         }
         return city_map.get(uni_code, 'უცნობი')
     
@@ -151,7 +150,7 @@ class UniversityRecommendationSystem:
                 failed_minimums.append(exam_name)
                 continue
             
-            scaled_score = raw_score * 2.0  # Max raw 100 → scaled 200
+            scaled_score = raw_score * 2.0
             contribution = scaled_score * coefficient
             competitive_score += contribution
             total_coefficients += coefficient
@@ -163,7 +162,7 @@ class UniversityRecommendationSystem:
                 'contribution': round(contribution, 2)
             })
         
-        # Выборочные — лучший
+        # Выборочные
         for i in range(1, 7):
             exam_name = program.get(f'elective_exam_{i}_name')
             if pd.isna(exam_name) or not exam_name.strip():
@@ -192,14 +191,12 @@ class UniversityRecommendationSystem:
             total_coefficients += best_elective['coefficient']
             scored_exams.append(best_elective)
         
-        # Процент совместимости
         if total_coefficients > 0:
             max_possible = 200.0 * total_coefficients
             compatibility = (competitive_score / max_possible) * 100.0
         else:
             compatibility = 0.0
         
-        # Шанс поступления
         if failed_minimums:
             admission_chance = "არ აკმაყოფილებს მინიმუმს"
             chance_level = "failed"
@@ -267,4 +264,3 @@ class UniversityRecommendationSystem:
         results.sort(key=lambda x: x['compatibility'], reverse=True)
         
         return results[:top_n]
-        
