@@ -41,6 +41,7 @@
             <div class="card-body">
                 <form method="post">
                     <div class="row g-4">
+                        <!-- Обязательные -->
                         <div class="col-md-6">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-book-open me-2"></i>ქართული ენა და ლიტერატურა</label>
@@ -52,11 +53,19 @@
                         <div class="col-md-6">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-globe me-2"></i>უცხოური ენა</label>
+                                <select name="foreign_lang" class="form-select mb-2">
+                                    <option value="">აირჩიეთ ენა</option>
+                                    <option value="ინგლისური ენა">ინგლისური</option>
+                                    <option value="გერმანული ენა">გერმანული</option>
+                                    <option value="ფრანგული ენა">ფრანგული</option>
+                                    <option value="რუსული ენა">რუსული</option>
+                                </select>
                                 <input type="number" name="foreign" class="form-control score-input" min="0" max="70" value="50" required>
                                 <div class="hint">მაქსიმუმი: 70 ქულა</div>
                             </div>
                         </div>
 
+                        <!-- Остальные предметы (можно расширить) -->
                         <div class="col-md-4">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-calculator me-2"></i>მათემატიკა</label>
@@ -65,21 +74,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="exam-card">
-                                <label class="form-label"><i class="fas fa-landmark me-2"></i>ისტორია</label>
-                                <input type="number" name="history" class="form-control score-input" min="0" max="60" value="0">
-                                <div class="hint">მაქსიმუმი: 60 ქულა</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="exam-card">
-                                <label class="form-label"><i class="fas fa-dna me-2"></i>ბიოლოგია</label>
-                                <input type="number" name="biology" class="form-control score-input" min="0" max="70" value="0">
-                                <div class="hint">მაქსიმუმი: 70 ქულა</div>
-                            </div>
-                        </div>
+                        <!-- Добавь остальные предметы по аналогии, если нужно -->
 
                         <div class="col-12 text-center mt-5">
                             <button type="submit" class="btn btn-primary btn-lg px-5 me-3">
@@ -94,37 +89,8 @@
             </div>
         </div>
 
-        {% if results %}
-        <div class="result-card">
-            <h3 class="text-center mb-4"><i class="fas fa-trophy me-2"></i>თქვენი საუკეთესო ვარიანტები</h3>
-            <div class="table-responsive">
-                <table class="table result-table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ფაკულტეტი</th>
-                            <th>კოდი</th>
-                            <th>ადგილები</th>
-                            <th>ბალი</th>
-                            <th>შანსი</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in results %}
-                        <tr>
-                            <td><strong>{{ r.program }}</strong></td>
-                            <td>{{ r.uni_code }}</td>
-                            <td>{{ r.places }}</td>
-                            <td><strong>{{ r.total }}</strong></td>
-                            <td class="{% if 'ძალიან მაღალი' in r.chance %}chance-high{% elif 'მაღალი' in r.chance %}chance-medium{% else %}chance-low{% endif %}">
-                                {{ r.chance }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
+        <!-- Результаты (пока пусто, добавим позже) -->
+        <div id="results" class="mt-5"></div>
     </div>
 </body>
 </html>
