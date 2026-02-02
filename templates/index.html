@@ -9,17 +9,24 @@
     <style>
         body { font-family: 'Noto Sans Georgian', sans-serif; background: linear-gradient(135deg, #e3f2fd, #bbdefb); min-height: 100vh; padding: 30px 15px; }
         .container { max-width: 1100px; }
-        h1 { color: #1565c0; font-weight: 700; }
-        .card { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
-        .card-header { background: linear-gradient(90deg, #1565c0, #42a5f5); color: white; font-weight: 600; padding: 20px; }
-        .exam-card { background: white; border-radius: 14px; padding: 20px; margin-bottom: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        .form-label { font-weight: 600; color: #1565c0; }
-        .score-input { font-size: 1.4rem; text-align: center; border: 2px solid #90caf9; }
-        .hint { font-size: 0.9rem; color: #555; }
-        .btn-primary { background: linear-gradient(90deg, #1565c0, #42a5f5); border: none; border-radius: 50px; padding: 14px 40px; }
-        .btn-outline-secondary { border-radius: 50px; }
+        h1 { color: #1565c0; font-weight: 700; text-shadow: 1px 1px 4px rgba(0,0,0,0.1); }
+        .card { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; }
+        .card-header { background: linear-gradient(90deg, #1565c0, #42a5f5); color: white; font-weight: 600; padding: 20px; font-size: 1.4rem; }
+        .exam-card { background: white; border-radius: 14px; padding: 20px; margin-bottom: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s; }
+        .exam-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
+        .form-label { font-weight: 600; color: #1565c0; margin-bottom: 8px; font-size: 1.1rem; }
+        .score-input { font-size: 1.4rem; font-weight: bold; text-align: center; border: 2px solid #90caf9; height: 55px; }
+        .score-input:focus { border-color: #1565c0; box-shadow: 0 0 0 0.3rem rgba(21,101,192,0.2); }
+        .hint { font-size: 0.95rem; color: #555; margin-top: 4px; }
+        .btn-primary { background: linear-gradient(90deg, #1565c0, #42a5f5); border: none; padding: 14px 50px; font-size: 1.2rem; border-radius: 50px; transition: all 0.3s; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(21,101,192,0.3); }
+        .btn-outline-secondary { border-radius: 50px; padding: 14px 40px; }
         .result-card { background: white; border-radius: 20px; padding: 30px; margin-top: 40px; box-shadow: 0 12px 35px rgba(0,0,0,0.15); }
-        .table th { background: #1565c0; color: white; }
+        .result-table th { background: #1565c0; color: white; }
+        .result-table td { vertical-align: middle; }
+        .chance-high { color: #2e7d32; font-weight: bold; }
+        .chance-medium { color: #f57c00; font-weight: bold; }
+        .chance-low { color: #c62828; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -29,19 +36,21 @@
 
         <div class="card mb-5">
             <div class="card-header text-center">
-                <i class="fas fa-file-signature me-2"></i>შეიყვანეთ ქულები
+                <i class="fas fa-file-signature me-2"></i>შეიყვანეთ ქულები (მაქსიმუმი მითითებულია)
             </div>
             <div class="card-body">
                 <form method="post">
                     <div class="row g-4">
+                        <!-- ქართული -->
                         <div class="col-md-6">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-book-open me-2"></i>ქართული ენა და ლიტერატურა</label>
                                 <input type="number" name="georgian" class="form-control score-input" min="0" max="60" value="35" required>
-                                <div class="hint">მაქს. 60 ქულა</div>
+                                <div class="hint">მაქსიმუმი: 60 ქულა</div>
                             </div>
                         </div>
 
+                        <!-- უცხოური ენა с выбором -->
                         <div class="col-md-6">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-globe me-2"></i>უცხოური ენა</label>
@@ -53,19 +62,36 @@
                                     <option value="რუსული ენა">რუსული</option>
                                 </select>
                                 <input type="number" name="foreign_score" class="form-control score-input" min="0" max="70" value="50" required>
-                                <div class="hint">მაქს. 70 ქულა</div>
+                                <div class="hint">მაქსიმუმი: 70 ქულა</div>
                             </div>
                         </div>
 
-                        <!-- Остальные предметы (расширь по необходимости) -->
+                        <!-- Остальные предметы (можно расширить) -->
                         <div class="col-md-4">
                             <div class="exam-card">
                                 <label class="form-label"><i class="fas fa-calculator me-2"></i>მათემატიკა</label>
                                 <input type="number" name="math" class="form-control score-input" min="0" max="51" value="0">
-                                <div class="hint">მაქს. 51 ქულა</div>
+                                <div class="hint">მაქსიმუმი: 51 ქულა</div>
                             </div>
                         </div>
 
+                        <div class="col-md-4">
+                            <div class="exam-card">
+                                <label class="form-label"><i class="fas fa-landmark me-2"></i>ისტორია</label>
+                                <input type="number" name="history" class="form-control score-input" min="0" max="60" value="0">
+                                <div class="hint">მაქსიმუმი: 60 ქულა</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="exam-card">
+                                <label class="form-label"><i class="fas fa-dna me-2"></i>ბიოლოგია</label>
+                                <input type="number" name="biology" class="form-control score-input" min="0" max="70" value="0">
+                                <div class="hint">მაქსიმუმი: 70 ქულა</div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
                         <div class="col-12 text-center mt-5">
                             <button type="submit" class="btn btn-primary btn-lg px-5 me-3">
                                 <i class="fas fa-search me-2"></i>შერჩევა
@@ -79,31 +105,36 @@
             </div>
         </div>
 
+        <!-- Блок результатов -->
         {% if results %}
         <div class="result-card">
-            <h3 class="text-center mb-4"><i class="fas fa-trophy me-2"></i>საუკეთესო ვარიანტები</h3>
-            <table class="table table-hover result-table">
-                <thead>
-                    <tr>
-                        <th>ფაკულტეტი</th>
-                        <th>კოდი</th>
-                        <th>კვალიფიკაცია</th>
-                        <th>ბალი</th>
-                        <th>შანსი</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in results %}
-                    <tr>
-                        <td>{{ r.program }}</td>
-                        <td>{{ r.uni_code }}</td>
-                        <td>{{ r.qualification }}</td>
-                        <td><strong>{{ r.total }}</strong></td>
-                        <td>{{ r.chance }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <h3 class="text-center mb-4"><i class="fas fa-trophy me-2"></i>თქვენი საუკეთესო ვარიანტები</h3>
+            <div class="table-responsive">
+                <table class="table result-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ფაკულტეტი</th>
+                            <th>კოდი</th>
+                            <th>კვალიფიკაცია</th>
+                            <th>ბალი</th>
+                            <th>შანსი</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in results %}
+                        <tr>
+                            <td><strong>{{ r.program }}</strong></td>
+                            <td>{{ r.uni_code }}</td>
+                            <td>{{ r.qualification }}</td>
+                            <td><strong>{{ r.total }}</strong></td>
+                            <td class="{% if 'ძალიან მაღალი' in r.chance %}chance-high{% elif 'მაღალი' in r.chance %}chance-medium{% else %}chance-low{% endif %}">
+                                {{ r.chance }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
         {% endif %}
     </div>
