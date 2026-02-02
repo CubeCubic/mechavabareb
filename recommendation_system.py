@@ -37,6 +37,11 @@ class UniversityRecommendationSystem:
         # Очищаем названия программ
         self.df['program_name_clean'] = self.df['program_name'].str.strip()
         
+        # КРИТИЧЕСКИ ВАЖНО: Нормализация teaching_language
+        self.df['teaching_language_normalized'] = self.df['teaching_language'].apply(
+            self._normalize_teaching_language
+        )
+        
         # Определяем категорию программы
         self.df['category'] = self.df.apply(self._categorize_program, axis=1)
         
@@ -48,24 +53,65 @@ class UniversityRecommendationSystem:
         print(f"✓ Государственные программы: {len(self.df[self.df['uni_type'] == 'სახელმწიფო'])}")
         print(f"✓ Частные программы: {len(self.df[self.df['uni_type'] == 'კერძო'])}")
     
+    def _normalize_teaching_language(self, lang_value):
+        """
+        Нормализация значения языка обучения
+        
+        Проблема: в базе есть 'ქართული ენა' и 'ქართული' (и аналогично для других языков)
+        Решение: приводим все к единому формату 'ქართული ენა'
+        
+        Args:
+            lang_value: Исходное значение teaching_language
+            
+        Returns:
+            Нормализованное значение
+        """
+        if pd.isna(lang_value):
+            return 'ქართული ენა'  # По умолчанию грузинский
+        
+        lang_str = str(lang_value).strip()
+        
+        # Проверяем на точные совпадения (уже нормализованные)
+        if lang_str in ['ქართული ენა', 'ინგლისური ენა', 'რუსული ენა']:
+            return lang_str
+        
+        # Нормализуем короткие варианты
+        if lang_str == 'ქართული':
+            return 'ქართული ენა'
+        elif lang_str == 'ინგლისური':
+            return 'ინგლისური ენა'
+        elif lang_str == 'რუსული':
+            return 'რუსული ენა'
+        
+        # Если это длинный текст с требованиями - это НЕ язык, это special_note
+        # Такие записи должны быть в special_note, но если они попали в teaching_language,
+        # считаем язык грузинским по умолчанию
+        if len(lang_str) > 50:
+            return 'ქართული ენა'
+        
+        # Для всех остальных случаев - грузинский по умолчанию
+        return 'ქართული ენა'
+    
     def _categorize_program(self, row) -> str:
         """Определяет категорию программы по названию"""
         name = row['program_name'].lower()
         uni_code = row['university_code']
         
         # Специальная обработка для теологических университетов
-        theological_universities = [4, 88, 173, 174, 175, 177, 184, 194]
+        # ИСПРАВЛЕНО: убраны 4 (театральный), 177 (музыкальный)
+        theological_universities = [88, 173, 174, 175, 184, 194]
         if uni_code in theological_universities:
             return 'საღვთისმეტყველო'
         
         categories = {
             'საღვთისმეტყველო': ['თეოლოგ', 'ღვთისმეტყველ', 'საღმრთო', 'საეკლესიო', 'სასულიერო', 'ქრისტიანული ხელოვნებ'],
             'მედიცინა და ფარმაცია': ['მედიცინა', 'სტომატოლოგ', 'ფარმაცია', 'ექთანი', 'სამეანო', 'რეაბილიტაცი'],
+            # ВАЖНО: მუსიკა და თეატრი ПЕРЕД ხელოვნება, т.к. могут содержать слово "ხელოვნება"
+            'მუსიკა და თეატრი': ['მუსიკ', 'თეატრ', 'კინო', 'მსახიობ', 'ბალეტ', 'ქორეოგრაფ', 'დირიჟორ', 'ვოკალ', 'რეჟისურ', 'ცეკვ', 'აუდიოვიზუალური', 'სამსახიობო'],
             'IT და კომპიუტერული მეცნიერებები': ['კომპიუტერ', 'ინფორმაცი'],
             'ბიზნესი და ეკონომიკა': ['ბიზნეს', 'ეკონომიკ', 'მენეჯმენტ', 'ფინანს', 'ტურიზმ', 'მარკეტინგ'],
             'სამართალი': ['სამართალ', 'იურისპრუდენცი'],
             'ხელოვნება და დიზაინი': ['ხელოვნება', 'დიზაინ', 'არქიტექტურ', 'ხატვა', 'გრაფიკ', 'რესტავრაცი'],
-            'მუსიკა და თეატრი': ['მუსიკ', 'თეატრ', 'კინო', 'მსახიობ', 'ბალეტ', 'ქორეოგრაფი'],
             'ინჟინერია': ['ინჟინერ', 'მშენებლობ', 'ენერგეტიკ', 'ტრანსპორტ'],
             'ენები და ფილოლოგია': ['ფილოლოგ', 'ქართული ენა', 'ინგლისური', 'გერმანული'],
             'საბუნებისმეტყველო მეცნიერებები': ['მათემატიკ', 'ფიზიკ', 'ქიმი', 'ბიოლოგ', 'გეოგრაფ', 'ეკოლოგ'],
@@ -145,7 +191,8 @@ class UniversityRecommendationSystem:
             filtered = filtered[filtered['category'] == category]
         
         if teaching_language:
-            filtered = filtered[filtered['teaching_language'] == teaching_language]
+            # ИСПРАВЛЕНО: используем нормализованное поле
+            filtered = filtered[filtered['teaching_language_normalized'] == teaching_language]
         
         return filtered
     
